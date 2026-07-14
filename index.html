@@ -31,7 +31,7 @@
 </div>
 
 <div id="start-screen" class="overlay">
-  <div class="panel">
+  <div class="panel wide">
     <h1>NEON ARENA</h1>
     <p>Fight computer-controlled sentries to the death in the arena.</p>
     <ul class="controls-list">
@@ -41,25 +41,32 @@
       <li><span class="key">SPACE / LMB</span> Fire</li>
       <li><span class="key">ESC</span> Pause</li>
     </ul>
-    <div class="enemy-count-selector">
-      <span class="selector-label">ENEMIES</span>
-      <div class="count-buttons" data-screen="start">
-        <button class="count-btn" data-count="1">1</button>
-        <button class="count-btn" data-count="2">2</button>
-        <button class="count-btn" data-count="3">3</button>
-        <button class="count-btn" data-count="4">4</button>
+
+    <div class="mode-grid">
+      <div class="mode-card normal">
+        <h3>NORMAL</h3>
+        <p class="tagline">Pick a headcount, jump in</p>
+        <div class="enemy-count-selector">
+          <span class="selector-label">ENEMIES</span>
+          <div class="count-buttons" data-screen="start">
+            <button class="count-btn" data-count="1">1</button>
+            <button class="count-btn" data-count="2">2</button>
+            <button class="count-btn" data-count="3">3</button>
+            <button class="count-btn" data-count="4">4</button>
+          </div>
+        </div>
+        <button id="start-button">START</button>
       </div>
-    </div>
-    <button id="start-button">START</button>
 
-    <div class="mode-divider"><span>OR</span></div>
-
-    <div class="survival-block">
-      <label class="carry-health-toggle">
-        <input type="checkbox" id="carry-health-checkbox" checked />
-        <span>Carry health between rounds</span>
-      </label>
-      <button id="survival-button" class="secondary-button">SURVIVAL — 4 ROUNDS</button>
+      <div class="mode-card survival">
+        <h3>SURVIVAL</h3>
+        <p class="tagline">4 rounds, +1 enemy each</p>
+        <label class="carry-health-toggle">
+          <input type="checkbox" id="carry-health-checkbox" checked />
+          <span>Carry health between rounds</span>
+        </label>
+        <button id="survival-button" class="secondary-button magenta">SURVIVAL — 4 ROUNDS</button>
+      </div>
     </div>
   </div>
 </div>

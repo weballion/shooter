@@ -190,6 +190,10 @@ html, body {
   max-width: 480px;
 }
 
+.panel.wide {
+  max-width: 820px;
+}
+
 .panel h1 {
   font-size: 40px;
   letter-spacing: 6px;
@@ -227,9 +231,9 @@ html, body {
 
 .enemy-count-selector {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 14px;
   margin-bottom: 24px;
 }
 
@@ -239,6 +243,7 @@ html, body {
   letter-spacing: 2px;
   color: #7dfcff;
   text-shadow: 0 0 6px rgba(0, 255, 255, 0.6);
+  white-space: nowrap;
 }
 
 .count-buttons {
@@ -322,38 +327,84 @@ button:hover {
   margin-bottom: 20px;
 }
 
-.mode-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 22px 0;
-  color: #5a7a8a;
-  font-size: 12px;
-  letter-spacing: 2px;
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
 }
 
-.mode-divider::before,
-.mode-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: rgba(0, 255, 255, 0.25);
-}
-
-.survival-block {
+.mode-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 14px;
+  border-radius: 10px;
+  padding: 22px 24px;
+}
+
+.mode-card.normal {
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.mode-card.survival {
+  border: 1px solid rgba(255, 46, 196, 0.4);
+  background: rgba(255, 46, 196, 0.06);
+  box-shadow: 0 0 24px rgba(255, 46, 196, 0.08);
+}
+
+.mode-card h3 {
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  margin-bottom: 4px;
+}
+
+.mode-card.normal h3 {
+  color: #7dfcff;
+}
+
+.mode-card.survival h3 {
+  color: #ff2ec4;
+  text-shadow: 0 0 10px rgba(255, 46, 196, 0.5);
+}
+
+.mode-card .tagline {
+  font-size: 12px;
+  color: #8fa8b8;
+  margin-bottom: 18px;
+}
+
+.mode-card .enemy-count-selector {
+  justify-content: center;
+}
+
+.mode-card button {
+  width: 100%;
+  margin-top: auto;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 14px 16px;
+  white-space: nowrap;
+}
+
+.secondary-button.magenta {
+  color: #ffd6f2;
+  border-color: rgba(255, 46, 196, 0.55);
+}
+
+.secondary-button.magenta:hover {
+  border-color: rgba(255, 46, 196, 0.9);
+  background: rgba(255, 46, 196, 0.08);
 }
 
 .carry-health-toggle {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-size: 13px;
   color: #d7f7ff;
   cursor: pointer;
+  margin-bottom: 18px;
 }
 
 .carry-health-toggle input {
@@ -370,4 +421,14 @@ button:hover {
 
 #round-subtitle {
   color: #d7f7ff;
+}
+
+@media (max-width: 720px) {
+  .panel.wide {
+    max-width: 480px;
+  }
+
+  .mode-grid {
+    grid-template-columns: 1fr;
+  }
 }
