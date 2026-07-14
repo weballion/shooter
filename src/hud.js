@@ -35,6 +35,7 @@ export class HUD {
 
     this.enemyCount = DEFAULT_ENEMY_COUNT;
     this.countButtonEls = document.querySelectorAll('.count-btn');
+    this.selectorLabelEls = document.querySelectorAll('.selector-label');
     this.countButtonEls.forEach((btn) => {
       btn.addEventListener('click', () => {
         this.enemyCount = parseInt(btn.dataset.count, 10);
@@ -47,6 +48,9 @@ export class HUD {
   _refreshCountButtons() {
     this.countButtonEls.forEach((btn) => {
       btn.classList.toggle('selected', parseInt(btn.dataset.count, 10) === this.enemyCount);
+    });
+    this.selectorLabelEls.forEach((label) => {
+      label.textContent = `ENEMIES: ${this.enemyCount}`;
     });
   }
 
