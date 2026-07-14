@@ -78,7 +78,7 @@ function beginRound(enemyCount, fullReset) {
   hud.hidePauseScreen();
   hud.hideRoundTransition();
   hud.showHUD();
-  input.requestPointerLock();
+  if (!input.isTouch) input.requestPointerLock();
   sound.gameStart();
   state = 'PLAYING';
 }
@@ -130,7 +130,7 @@ function resumeRound() {
   state = 'PLAYING';
   input.mouseDown = false; // avoid an instant shot from the click that resumed
   hud.hidePauseScreen();
-  input.requestPointerLock();
+  if (!input.isTouch) input.requestPointerLock();
 }
 
 hud.onResume(resumeRound);
@@ -141,8 +141,13 @@ window.addEventListener('keydown', (e) => {
   else if (state === 'PAUSED') resumeRound();
 });
 
+document.getElementById('touch-pause-button').addEventListener('click', () => {
+  if (state === 'PLAYING') pauseRound();
+  else if (state === 'PAUSED') resumeRound();
+});
+
 renderer.domElement.addEventListener('click', () => {
-  if (state === 'PLAYING') input.requestPointerLock();
+  if (state === 'PLAYING' && !input.isTouch) input.requestPointerLock();
 });
 
 window.addEventListener('resize', () => {

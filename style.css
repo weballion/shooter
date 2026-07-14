@@ -98,6 +98,93 @@ html, body {
   inset: 0;
 }
 
+/* Touch controls: hidden unless the device's primary pointer is coarse (touch). */
+
+.touch-only { display: none; }
+.controls-list.touch-only { display: none; }
+
+#touch-controls {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .controls-list.desktop-only { display: none; }
+  .touch-only.controls-list { display: inline-block; }
+  .touch-only:not(.controls-list) { display: block; }
+
+  #touch-controls {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+}
+
+#touch-joystick-zone,
+#touch-look-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+#touch-joystick-zone { left: 0; }
+#touch-look-zone { right: 0; }
+
+#touch-joystick-knob {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 229, 255, 0.5);
+  background: rgba(0, 229, 255, 0.12);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#touch-joystick-knob.active {
+  opacity: 1;
+}
+
+#touch-fire-button {
+  position: absolute;
+  right: 32px;
+  bottom: 40px;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  padding: 0;
+  pointer-events: auto;
+  touch-action: none;
+  color: #04121a;
+  background: radial-gradient(circle at 35% 30%, #7dfcff, #00e5ff 60%, #00b8cc);
+  border: none;
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.7);
+}
+
+#touch-fire-button:active {
+  filter: brightness(0.9);
+}
+
+#touch-pause-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  pointer-events: auto;
+  font-size: 14px;
+  letter-spacing: 0;
+  color: #7dfcff;
+  background: rgba(10, 12, 30, 0.6);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  box-shadow: none;
+}
+
 .damage-number {
   position: absolute;
   top: 0;

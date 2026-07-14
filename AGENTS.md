@@ -12,14 +12,26 @@ deliberate, not oversights.
 - **Audio is 100% synthesized** (`src/audio.js`, Web Audio oscillators/noise).
   No external audio files — keep it that way rather than adding assets.
 - **Controls are fixed by design:** arrows move/strafe, mouse looks
-  (pointer-lock), Space or left mouse fires, Escape pauses. See
+  (pointer-lock), Space or left mouse fires, Escape pauses. On touch devices
+  (`(pointer: coarse)`), `input.js` also drives the same state from an
+  on-screen joystick + look-drag + fire/pause buttons — see `#touch-controls`
+  in `index.html`. `player.js`/`main.js` don't know or care which source fed
+  `InputManager`'s state. See
   `docs/superpowers/specs/2026-07-14-3d-fps-arena-design.md` for the full
   rationale behind these and other design choices.
 - **Architecture:** `src/main.js` owns the state machine (START / PLAYING /
-  PAUSED / ENDED) and wires together `arena.js`, `player.js`, `bot.js`,
-  `input.js`, `hud.js`, `effects.js`, `damageNumbers.js`, `audio.js`, and the
-  shared `collision.js` helper. Each module is single-purpose; prefer adding
-  a focused module over growing `main.js`.
+  PAUSED / ROUND_TRANSITION / ENDED) and wires together `arena.js`,
+  `player.js`, `bot.js`, `input.js`, `hud.js`, `effects.js`,
+  `damageNumbers.js`, `audio.js`, and the shared `collision.js` helper. Each
+  module is single-purpose; prefer adding a focused module over growing
+  `main.js`.
+- **CSS gotcha:** utility classes like `.desktop-only`/`.touch-only` must be
+  paired with their target class (e.g. `.controls-list.touch-only`) to win
+  the cascade — a bare `.touch-only { display: none }` has the same
+  specificity as `.controls-list { display: inline-block }` defined later in
+  the file, and loses on source order alone. Bit this exact bug twice while
+  building the touch controls; watch for it when adding new show/hide
+  modifiers to existing components.
 
 ## Running / verifying changes
 

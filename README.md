@@ -23,8 +23,10 @@ no server-side code, running entirely in the browser.
 - Synthesized sound effects (no external audio files)
 - Pause menu (Escape), with a mid-run exit back to normal mode during
   Survival
+- Playable on phones/tablets — on-screen joystick, look-drag, and fire/pause
+  buttons appear automatically on touch devices
 
-**Controls**
+**Controls (desktop)**
 
 | Key             | Action              |
 |-----------------|---------------------|
@@ -33,6 +35,15 @@ no server-side code, running entirely in the browser.
 | Mouse           | Look around          |
 | Space / LMB     | Fire                |
 | Escape          | Pause / resume       |
+
+**Controls (touch)**
+
+| Gesture               | Action        |
+|------------------------|---------------|
+| Drag — left half       | Move          |
+| Drag — right half      | Look around   |
+| Tap fire button         | Fire          |
+| Tap pause button         | Pause / resume |
 
 ### How to run
 
@@ -75,8 +86,10 @@ No internet connection is required — Three.js is bundled locally in
 - Синтезированные звуковые эффекты (без внешних аудиофайлов)
 - Меню паузы (Escape), с возможностью выйти в обычный режим прямо
   посреди забега "на выживание"
+- Играбельно на телефоне/планшете — на сенсорных устройствах
+  автоматически появляются джойстик, драг-обзор и кнопки огня/паузы
 
-**Управление**
+**Управление (десктоп)**
 
 | Клавиша         | Действие                |
 |-----------------|--------------------------|
@@ -85,6 +98,15 @@ No internet connection is required — Three.js is bundled locally in
 | Мышь            | Обзор                    |
 | Space / ЛКМ     | Стрельба                 |
 | Escape          | Пауза / продолжить       |
+
+**Управление (сенсорный экран)**
+
+| Жест                    | Действие        |
+|--------------------------|-----------------|
+| Драг — левая половина    | Движение        |
+| Драг — правая половина   | Обзор           |
+| Тап по кнопке огня       | Стрельба        |
+| Тап по кнопке паузы      | Пауза / продолжить |
 
 ### Как запустить
 

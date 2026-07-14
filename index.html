@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Neon Arena — 3D FPS</title>
 <link rel="stylesheet" href="style.css" />
 <script type="importmap">
@@ -21,6 +21,14 @@
   <div id="crosshair"></div>
   <div id="hit-marker"></div>
   <div id="damage-numbers"></div>
+
+  <div id="touch-controls">
+    <div id="touch-joystick-zone"><div id="touch-joystick-knob"></div></div>
+    <div id="touch-look-zone"></div>
+    <button id="touch-fire-button" aria-label="Fire"></button>
+    <button id="touch-pause-button" aria-label="Pause">&#10073;&#10073;</button>
+  </div>
+
   <div id="health-bars">
     <div class="health-row">
       <span class="health-label">YOU</span>
@@ -34,12 +42,18 @@
   <div class="panel wide">
     <h1>NEON ARENA</h1>
     <p>Fight computer-controlled sentries to the death in the arena.</p>
-    <ul class="controls-list">
+    <ul class="controls-list desktop-only">
       <li><span class="key">&uarr; &darr;</span> Move forward / backward</li>
       <li><span class="key">&larr; &rarr;</span> Strafe left / right</li>
       <li><span class="key">MOUSE</span> Look around</li>
       <li><span class="key">SPACE / LMB</span> Fire</li>
       <li><span class="key">ESC</span> Pause</li>
+    </ul>
+    <ul class="controls-list touch-only">
+      <li><span class="key">LEFT</span> Drag to move</li>
+      <li><span class="key">RIGHT</span> Drag to look</li>
+      <li><span class="key">&#9679;</span> Tap to fire</li>
+      <li><span class="key">&#10073;&#10073;</span> Tap to pause</li>
     </ul>
 
     <div class="mode-grid">
