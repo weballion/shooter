@@ -9,6 +9,7 @@ const MOUSE_SENSITIVITY = 0.0022;
 const FIRE_COOLDOWN = 0.3;
 const MAX_HEALTH = 100;
 const DAMAGE_PER_HIT = 20;
+const MAX_RANGE = 70;
 
 export class Player {
   constructor() {
@@ -89,24 +90,33 @@ export class Player {
       this.fireTimer -= delta;
     }
 
-    let firedHit = null;
+    let shot = null;
     if (input.firing && this.fireTimer <= 0 && this.isAlive) {
       this.fireTimer = FIRE_COOLDOWN;
-      firedHit = this._fire(arena, bot);
+      shot = this._fire(arena, bot);
     }
 
-    return firedHit; // null = did not fire, true = fired & hit, false = fired & missed
+    return shot; // null = did not fire; otherwise { origin, impactPoint, hitBot, damage }
   }
 
+  /**
+   * Determines the shot's outcome immediately (hitscan), but leaves applying
+   * damage to the caller so it can be timed to a traveling bolt's arrival.
+   */
   _fire(arena, bot) {
-    this.raycaster.set(this.camera.position, this.camera.getWorldDirection(new THREE.Vector3()));
+    const origin = this.camera.position.clone();
+    const direction = this.camera.getWorldDirection(new THREE.Vector3());
+    this.raycaster.set(origin, direction);
+    this.raycaster.far = MAX_RANGE;
+
     const targets = bot && bot.isAlive ? [bot.mesh, ...arena.colliders] : [...arena.colliders];
     const hits = this.raycaster.intersectObjects(targets, false);
-    if (hits.length > 0 && bot && hits[0].object === bot.mesh) {
-      bot.takeDamage(DAMAGE_PER_HIT);
-      return true;
-    }
-    return false;
+    const hitBot = hits.length > 0 && bot && hits[0].object === bot.mesh;
+    const impactPoint = hits.length > 0
+      ? hits[0].point.clone()
+      : origin.clone().add(direction.multiplyScalar(MAX_RANGE));
+
+    return { origin, impactPoint, hitBot, damage: DAMAGE_PER_HIT };
   }
 
   takeDamage(amount) {

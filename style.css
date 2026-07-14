@@ -93,6 +93,20 @@ html, body {
   transform: translateX(-50%) rotate(45deg);
 }
 
+#damage-numbers {
+  position: absolute;
+  inset: 0;
+}
+
+.damage-number {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 22px;
+  font-weight: 800;
+  text-shadow: 0 0 8px currentColor;
+}
+
 #health-bars {
   position: absolute;
   bottom: 24px;

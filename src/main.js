@@ -4,6 +4,11 @@ import { Player } from './player.js';
 import { Bot } from './bot.js';
 import { InputManager } from './input.js';
 import { HUD } from './hud.js';
+import { Effects } from './effects.js';
+import { DamageNumbers } from './damageNumbers.js';
+
+const PLAYER_BOLT_COLOR = 0x00e5ff;
+const BOT_BOLT_COLOR = 0xff2ec4;
 
 const container = document.getElementById('game-container');
 
@@ -19,6 +24,8 @@ const player = new Player();
 const bot = new Bot(scene);
 const input = new InputManager(renderer.domElement);
 const hud = new HUD();
+const effects = new Effects(scene);
+const damageNumbers = new DamageNumbers(document.getElementById('damage-numbers'));
 
 let state = 'START'; // 'START' | 'PLAYING' | 'ENDED'
 
@@ -59,13 +66,29 @@ renderer.setAnimationLoop(() => {
   const delta = Math.min(clock.getDelta(), 0.1);
 
   if (state === 'PLAYING') {
-    const playerFired = player.update(delta, input, arena, bot);
-    if (playerFired !== null) {
+    const playerShot = player.update(delta, input, arena, bot);
+    if (playerShot) {
       hud.flashCrosshair();
-      if (playerFired) hud.showHitMarker();
+      effects.spawnBolt(playerShot.origin, playerShot.impactPoint, PLAYER_BOLT_COLOR, () => {
+        if (playerShot.hitBot) {
+          bot.takeDamage(playerShot.damage);
+          hud.showHitMarker();
+          const above = bot.position.clone();
+          above.y += 1.6;
+          damageNumbers.spawn(above, playerShot.damage, '#ff2ec4');
+        }
+      });
     }
 
-    bot.update(delta, player, arena);
+    const botShot = bot.update(delta, player, arena);
+    if (botShot) {
+      effects.spawnBolt(botShot.origin, botShot.impactPoint, BOT_BOLT_COLOR, () => {
+        if (botShot.hit) player.takeDamage(botShot.damage);
+      });
+    }
+
+    effects.update(delta);
+    damageNumbers.update(delta, player.camera);
 
     hud.updateHealth(player.health, bot.health);
 

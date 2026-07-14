@@ -5,9 +5,17 @@ export class InputManager {
     this.lookDeltaX = 0;
     this.lookDeltaY = 0;
     this.pointerLocked = false;
+    this.mouseDown = false;
 
     window.addEventListener('keydown', (e) => this.keys.add(e.code));
     window.addEventListener('keyup', (e) => this.keys.delete(e.code));
+
+    window.addEventListener('mousedown', (e) => {
+      if (e.button === 0) this.mouseDown = true;
+    });
+    window.addEventListener('mouseup', (e) => {
+      if (e.button === 0) this.mouseDown = false;
+    });
 
     document.addEventListener('pointerlockchange', () => {
       this.pointerLocked = document.pointerLockElement === this.domElement;
@@ -48,7 +56,7 @@ export class InputManager {
   }
 
   get firing() {
-    return this.keys.has('Space');
+    return this.keys.has('Space') || this.mouseDown;
   }
 
   /** Returns accumulated mouse movement since last call and resets it. */

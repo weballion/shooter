@@ -78,9 +78,14 @@ export class Bot {
     return this.mesh.position;
   }
 
+  _eyePosition() {
+    const eye = this.position.clone();
+    eye.y += EYE_OFFSET - 0.6;
+    return eye;
+  }
+
   _hasLineOfSight(playerCameraPos, arena) {
-    const from = this.position.clone();
-    from.y += EYE_OFFSET - 0.6;
+    const from = this._eyePosition();
     const to = playerCameraPos.clone();
     const dir = to.clone().sub(from);
     const distance = dir.length();
@@ -135,24 +140,31 @@ export class Bot {
     moveWithCollision(this.position, moveDir.x * step, moveDir.z * step, RADIUS, arena.colliders, arena.halfSize);
     this.mesh.position.y = BODY_HEIGHT / 2 + 0.45;
 
-    let hitPlayer = null;
+    let shot = null;
     if (this.state === 'ENGAGE' && this.fireTimer <= 0) {
       this.fireTimer = FIRE_COOLDOWN;
-      hitPlayer = this._fireAt(player, distance);
+      shot = this._fireAt(player, distance);
     }
 
-    return hitPlayer; // null = did not fire, true = hit, false = missed
+    return shot; // null = did not fire; otherwise { origin, impactPoint, hit, damage }
   }
 
+  /**
+   * Accuracy tapers off with distance so the bot is beatable at range. Hit
+   * outcome is decided immediately; damage is applied by the caller once the
+   * visual bolt arrives. Misses aim near, not at, the player.
+   */
   _fireAt(player, distance) {
-    // Accuracy tapers off with distance so the bot is beatable at range.
     const accuracy = Math.max(0.15, 0.85 - distance / (ENGAGE_RANGE * 1.5));
     const hit = Math.random() < accuracy;
-    if (hit) {
-      player.takeDamage(DAMAGE_PER_HIT);
-      return true;
+    const origin = this._eyePosition();
+    const impactPoint = player.camera.position.clone();
+    if (!hit) {
+      impactPoint.x += (Math.random() - 0.5) * 2.4;
+      impactPoint.y += (Math.random() - 0.3) * 1.6;
+      impactPoint.z += (Math.random() - 0.5) * 2.4;
     }
-    return false;
+    return { origin, impactPoint, hit, damage: DAMAGE_PER_HIT };
   }
 
   takeDamage(amount) {
