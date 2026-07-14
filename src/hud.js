@@ -1,4 +1,5 @@
 import { DEFAULT_ARENA_THEME } from './themes.js';
+import { DEFAULT_DIFFICULTY } from './difficulty.js';
 
 const DEFAULT_ENEMY_COUNT = 1;
 
@@ -58,6 +59,16 @@ export class HUD {
       });
     });
     this._refreshThemeButtons();
+
+    this.difficulty = DEFAULT_DIFFICULTY;
+    this.difficultyButtonEls = document.querySelectorAll('.difficulty-btn');
+    this.difficultyButtonEls.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.difficulty = btn.dataset.difficulty;
+        this._refreshDifficultyButtons();
+      });
+    });
+    this._refreshDifficultyButtons();
   }
 
   _refreshCountButtons() {
@@ -75,12 +86,22 @@ export class HUD {
     });
   }
 
+  _refreshDifficultyButtons() {
+    this.difficultyButtonEls.forEach((btn) => {
+      btn.classList.toggle('selected', btn.dataset.difficulty === this.difficulty);
+    });
+  }
+
   getEnemyCount() {
     return this.enemyCount;
   }
 
   getArenaTheme() {
     return this.arenaTheme;
+  }
+
+  getDifficulty() {
+    return this.difficulty;
   }
 
   getCarryHealth() {

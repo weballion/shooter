@@ -275,6 +275,8 @@ html, body {
   background: rgba(6, 8, 22, 0.7);
   box-shadow: 0 0 30px rgba(0, 255, 255, 0.25);
   max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
 }
 
 .panel.wide {
@@ -346,11 +348,14 @@ html, body {
 .count-buttons,
 .theme-buttons {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
 }
 
 .count-btn,
-.theme-btn {
+.theme-btn,
+.difficulty-btn {
   padding: 0;
   font-size: 16px;
   letter-spacing: 0;
@@ -366,7 +371,8 @@ html, body {
   height: 40px;
 }
 
-.theme-btn {
+.theme-btn,
+.difficulty-btn {
   height: 40px;
   padding: 0 14px;
   font-size: 12px;
@@ -375,13 +381,15 @@ html, body {
 }
 
 .count-btn:hover,
-.theme-btn:hover {
+.theme-btn:hover,
+.difficulty-btn:hover {
   border-color: rgba(0, 255, 255, 0.8);
   filter: none;
 }
 
 .count-btn.selected,
-.theme-btn.selected {
+.theme-btn.selected,
+.difficulty-btn.selected {
   color: #04121a;
   background: linear-gradient(90deg, #00e5ff, #00ff9d);
   border-color: transparent;
@@ -489,7 +497,7 @@ button:hover {
   justify-content: center;
 }
 
-.mode-card button {
+.mode-card > button {
   width: 100%;
   margin-top: auto;
   font-size: 13px;

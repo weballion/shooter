@@ -37,9 +37,16 @@ deliberate, not oversights.
 - **Architecture:** `src/main.js` owns the state machine (START / PLAYING /
   PAUSED / ROUND_TRANSITION / ENDED) and wires together `arena.js`,
   `player.js`, `bot.js`, `input.js`, `hud.js`, `effects.js`,
-  `damageNumbers.js`, `audio.js`, and the shared `collision.js` helper. Each
+  `damageNumbers.js`, `audio.js`, `pickups.js`, `themes.js`, `faces.js`,
+  `difficulty.js`, and the shared `collision.js` helper. Each
   module is single-purpose; prefer adding a focused module over growing
   `main.js`.
+- **Bot difficulty:** `difficulty.js` exports 5 tiers (rookie/regular/
+  veteran/elite/nightmare, nightmare is default) as plain data —
+  moveSpeed, engageRange, comfortDistance, fireCooldown, accuracyBase/Floor.
+  `bot.js` takes a `difficultyKey` in its constructor and reads all
+  behavior tuning off `this.difficulty` instead of module-level constants;
+  add new tiers there rather than hardcoding bot behavior again.
 - **CSS gotcha:** utility classes like `.desktop-only`/`.touch-only` must be
   paired with their target class (e.g. `.controls-list.touch-only`) to win
   the cascade — a bare `.touch-only { display: none }` has the same

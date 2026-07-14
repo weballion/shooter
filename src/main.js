@@ -10,6 +10,7 @@ import { SoundManager } from './audio.js';
 import { Pickups } from './pickups.js';
 import { DEFAULT_ARENA_THEME } from './themes.js';
 import { loadFaceTextures, pickRandomFaces } from './faces.js';
+import { DEFAULT_DIFFICULTY } from './difficulty.js';
 
 const PLAYER_BOLT_COLOR = 0x00e5ff;
 const BOT_BOLT_COLOR = 0xff2ec4;
@@ -66,6 +67,7 @@ let survivalRound = 1;
 let carryHealth = true;
 let pickupsEnabled = true;
 let facesEnabled = true;
+let botDifficulty = DEFAULT_DIFFICULTY;
 let faceTextures = [];
 loadFaceTextures().then((textures) => {
   faceTextures = textures; // any round already in progress keeps its bots as-is
@@ -74,7 +76,7 @@ loadFaceTextures().then((textures) => {
 function spawnBots(count) {
   bots.forEach((b) => scene.remove(b.mesh));
   const faces = facesEnabled ? pickRandomFaces(faceTextures, count) : [];
-  bots = SPAWN_POINTS.slice(0, count).map((point, i) => new Bot(scene, point, faces[i]));
+  bots = SPAWN_POINTS.slice(0, count).map((point, i) => new Bot(scene, point, faces[i], botDifficulty));
 }
 
 function applyArenaTheme(themeKey) {
@@ -97,6 +99,7 @@ function beginRound(enemyCount, fullReset) {
   else pickups.deactivate();
 
   facesEnabled = hud.getCustomFacesEnabled();
+  botDifficulty = hud.getDifficulty();
   spawnBots(enemyCount);
   hud.setupEnemyHealthBars(bots.length);
   hud.updateHealth(player.health, bots.map((b) => b.health));

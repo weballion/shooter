@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { moveWithCollision, isBlockedAt } from './collision.js';
+import { getDifficulty } from './difficulty.js';
 
 // Spread across the back half of the arena, clear of pillars and each other.
 export const SPAWN_POINTS = [
@@ -12,10 +13,6 @@ export const SPAWN_POINTS = [
 export const RADIUS = 0.5;
 const BODY_HEIGHT = 1.3;
 const EYE_OFFSET = 1.6;
-const MOVE_SPEED = 5;
-const ENGAGE_RANGE = 16;
-const COMFORT_DISTANCE = 8;
-const FIRE_COOLDOWN = 0.6;
 const MAX_HEALTH = 100;
 const DAMAGE_PER_HIT = 20;
 const LOOKAHEAD = 1.4;
@@ -106,9 +103,10 @@ function steerAround(position, dir, colliders) {
 }
 
 export class Bot {
-  constructor(scene, spawnPosition, faceTexture) {
+  constructor(scene, spawnPosition, faceTexture, difficultyKey) {
     this.mesh = buildMesh(spawnPosition, faceTexture);
     scene.add(this.mesh);
+    this.difficulty = getDifficulty(difficultyKey);
     this.health = MAX_HEALTH;
     this.state = 'CHASE';
     this.strafeSign = 1;
@@ -158,7 +156,7 @@ export class Bot {
     const dirToPlayer = distance > 0.0001 ? toPlayer.clone().normalize() : new THREE.Vector3(0, 0, 1);
 
     const losClear = player.isAlive && this._hasLineOfSight(player.camera.position, arena);
-    this.state = losClear && distance <= ENGAGE_RANGE ? 'ENGAGE' : 'CHASE';
+    this.state = losClear && distance <= this.difficulty.engageRange ? 'ENGAGE' : 'CHASE';
 
     // Face the player (matches three.js's -Z-forward convention; see player.js).
     this.mesh.rotation.y = Math.atan2(dirToPlayer.x, dirToPlayer.z) + Math.PI;
@@ -172,9 +170,10 @@ export class Bot {
       }
       const perp = new THREE.Vector3(-dirToPlayer.z, 0, dirToPlayer.x).multiplyScalar(this.strafeSign);
 
-      if (distance > COMFORT_DISTANCE + 1.5) {
+      const comfortDistance = this.difficulty.comfortDistance;
+      if (distance > comfortDistance + 1.5) {
         moveDir = dirToPlayer.clone().add(perp.clone().multiplyScalar(0.4)).normalize();
-      } else if (distance < COMFORT_DISTANCE - 1.5) {
+      } else if (distance < comfortDistance - 1.5) {
         moveDir = dirToPlayer.clone().negate().add(perp.clone().multiplyScalar(0.4)).normalize();
       } else {
         moveDir = perp;
@@ -183,13 +182,13 @@ export class Bot {
       moveDir = steerAround(this.position, dirToPlayer, arena.colliders);
     }
 
-    const step = MOVE_SPEED * delta;
+    const step = this.difficulty.moveSpeed * delta;
     moveWithCollision(this.position, moveDir.x * step, moveDir.z * step, RADIUS, arena.colliders, arena.halfSize);
     this.mesh.position.y = BODY_HEIGHT / 2 + 0.45;
 
     let shot = null;
     if (this.state === 'ENGAGE' && this.fireTimer <= 0) {
-      this.fireTimer = FIRE_COOLDOWN;
+      this.fireTimer = this.difficulty.fireCooldown;
       shot = this._fireAt(player, distance);
     }
 
@@ -202,7 +201,8 @@ export class Bot {
    * visual bolt arrives. Misses aim near, not at, the player.
    */
   _fireAt(player, distance) {
-    const accuracy = Math.max(0.15, 0.85 - distance / (ENGAGE_RANGE * 1.5));
+    const { accuracyBase, accuracyFloor, engageRange } = this.difficulty;
+    const accuracy = Math.max(accuracyFloor, accuracyBase - distance / (engageRange * 1.5));
     const hit = Math.random() < accuracy;
     const origin = this._eyePosition();
     const impactPoint = player.camera.position.clone();
