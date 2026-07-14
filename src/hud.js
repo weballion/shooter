@@ -11,13 +11,24 @@ export class HUD {
 
     this.startScreenEl = document.getElementById('start-screen');
     this.startButtonEl = document.getElementById('start-button');
+    this.survivalButtonEl = document.getElementById('survival-button');
+    this.carryHealthCheckboxEl = document.getElementById('carry-health-checkbox');
 
     this.endScreenEl = document.getElementById('end-screen');
     this.endTitleEl = document.getElementById('end-title');
+    this.endSubtitleEl = document.getElementById('end-subtitle');
+    this.endEnemySelectorEl = document.getElementById('end-enemy-selector');
     this.restartButtonEl = document.getElementById('restart-button');
 
     this.pauseScreenEl = document.getElementById('pause-screen');
     this.resumeButtonEl = document.getElementById('resume-button');
+    this.pauseExitSurvivalButtonEl = document.getElementById('pause-exit-survival-button');
+
+    this.roundScreenEl = document.getElementById('round-screen');
+    this.roundTitleEl = document.getElementById('round-title');
+    this.roundSubtitleEl = document.getElementById('round-subtitle');
+    this.continueRoundButtonEl = document.getElementById('continue-round-button');
+    this.exitSurvivalButtonEl = document.getElementById('exit-survival-button');
 
     this._hitMarkerTimeout = null;
     this._crosshairTimeout = null;
@@ -41,6 +52,10 @@ export class HUD {
 
   getEnemyCount() {
     return this.enemyCount;
+  }
+
+  getCarryHealth() {
+    return this.carryHealthCheckboxEl.checked;
   }
 
   /** (Re)builds one health-bar row per bot, in arena/spawn order. */
@@ -72,12 +87,24 @@ export class HUD {
     this.startButtonEl.addEventListener('click', callback);
   }
 
-  onRestart(callback) {
-    this.restartButtonEl.addEventListener('click', callback);
+  onSurvivalStart(callback) {
+    this.survivalButtonEl.addEventListener('click', callback);
   }
 
   onResume(callback) {
     this.resumeButtonEl.addEventListener('click', callback);
+  }
+
+  onPauseExitSurvival(callback) {
+    this.pauseExitSurvivalButtonEl.addEventListener('click', callback);
+  }
+
+  onContinueRound(callback) {
+    this.continueRoundButtonEl.addEventListener('click', callback);
+  }
+
+  onExitSurvival(callback) {
+    this.exitSurvivalButtonEl.addEventListener('click', callback);
   }
 
   showStartScreen() {
@@ -96,9 +123,25 @@ export class HUD {
     this.hudEl.classList.add('hidden');
   }
 
-  showEndScreen(playerWon) {
-    this.endTitleEl.textContent = playerWon ? 'VICTORY' : 'DEFEAT';
-    this.endTitleEl.className = playerWon ? 'victory' : 'defeat';
+  /** `label`/`callback` replace whatever the restart button previously did. */
+  setRestartAction(label, callback) {
+    this.restartButtonEl.textContent = label;
+    this.restartButtonEl.onclick = callback;
+  }
+
+  setEndScreenCountSelectorVisible(visible) {
+    this.endEnemySelectorEl.classList.toggle('hidden', !visible);
+  }
+
+  showEndScreen(title, titleClass, subtitle) {
+    this.endTitleEl.textContent = title;
+    this.endTitleEl.className = titleClass;
+    if (subtitle) {
+      this.endSubtitleEl.textContent = subtitle;
+      this.endSubtitleEl.classList.remove('hidden');
+    } else {
+      this.endSubtitleEl.classList.add('hidden');
+    }
     this.endScreenEl.classList.remove('hidden');
   }
 
@@ -112,6 +155,20 @@ export class HUD {
 
   hidePauseScreen() {
     this.pauseScreenEl.classList.add('hidden');
+  }
+
+  setPauseExitVisible(visible) {
+    this.pauseExitSurvivalButtonEl.classList.toggle('hidden', !visible);
+  }
+
+  showRoundTransition(roundNumber, enemyCount) {
+    this.roundTitleEl.textContent = `ROUND ${roundNumber}`;
+    this.roundSubtitleEl.textContent = `${enemyCount} ${enemyCount === 1 ? 'enemy' : 'enemies'} incoming`;
+    this.roundScreenEl.classList.remove('hidden');
+  }
+
+  hideRoundTransition() {
+    this.roundScreenEl.classList.add('hidden');
   }
 
   updateHealth(playerHealth, botHealths) {

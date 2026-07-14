@@ -10,6 +10,7 @@ import { SoundManager } from './audio.js';
 
 const PLAYER_BOLT_COLOR = 0x00e5ff;
 const BOT_BOLT_COLOR = 0xff2ec4;
+const SURVIVAL_MAX_ROUND = SPAWN_POINTS.length;
 
 /** Keeps bots from overlapping each other by pushing apart any pair that's too close. */
 function separateBots(bots) {
@@ -54,32 +55,73 @@ const effects = new Effects(scene);
 const damageNumbers = new DamageNumbers(document.getElementById('damage-numbers'));
 const sound = new SoundManager();
 
-let state = 'START'; // 'START' | 'PLAYING' | 'PAUSED' | 'ENDED'
+let state = 'START'; // 'START' | 'PLAYING' | 'PAUSED' | 'ROUND_TRANSITION' | 'ENDED'
+let mode = 'NORMAL'; // 'NORMAL' | 'SURVIVAL'
+let survivalRound = 1;
+let carryHealth = true;
 
 function spawnBots(count) {
   bots.forEach((b) => scene.remove(b.mesh));
   bots = SPAWN_POINTS.slice(0, count).map((point) => new Bot(scene, point));
 }
 
-function startRound() {
-  player.reset();
-  spawnBots(hud.getEnemyCount());
+/** Common "put the player and bots on the field and go" step for any round. */
+function beginRound(enemyCount, fullReset) {
+  if (fullReset) player.reset();
+  else player.resetPosition();
+
+  spawnBots(enemyCount);
   hud.setupEnemyHealthBars(bots.length);
   hud.updateHealth(player.health, bots.map((b) => b.health));
   hud.hideStartScreen();
   hud.hideEndScreen();
   hud.hidePauseScreen();
+  hud.hideRoundTransition();
   hud.showHUD();
   input.requestPointerLock();
   sound.gameStart();
   state = 'PLAYING';
 }
 
+function startRound() {
+  mode = 'NORMAL';
+  beginRound(hud.getEnemyCount(), true);
+}
+
+function startSurvivalRun() {
+  mode = 'SURVIVAL';
+  survivalRound = 1;
+  carryHealth = hud.getCarryHealth();
+  beginRound(survivalRound, true);
+}
+
+function restartSurvivalRun() {
+  survivalRound = 1;
+  beginRound(survivalRound, true);
+}
+
+function exitToNormalMode() {
+  mode = 'NORMAL';
+  state = 'START';
+  bots.forEach((b) => scene.remove(b.mesh));
+  bots = [];
+  if (document.pointerLockElement) document.exitPointerLock();
+  hud.hideHUD();
+  hud.hideEndScreen();
+  hud.hidePauseScreen();
+  hud.hideRoundTransition();
+  hud.showStartScreen();
+}
+
 hud.onStart(startRound);
-hud.onRestart(startRound);
+hud.onSurvivalStart(startSurvivalRun);
+hud.onContinueRound(() => beginRound(survivalRound, !carryHealth));
+hud.onExitSurvival(exitToNormalMode);
+hud.onPauseExitSurvival(exitToNormalMode);
 
 function pauseRound() {
   state = 'PAUSED';
+  hud.setPauseExitVisible(mode === 'SURVIVAL');
   hud.showPauseScreen();
   if (document.pointerLockElement) document.exitPointerLock();
 }
@@ -109,13 +151,47 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-function endRound(playerWon) {
+function handleNormalRoundEnd(playerWon) {
   state = 'ENDED';
   hud.hideHUD();
-  hud.showEndScreen(playerWon);
+  if (document.pointerLockElement) document.exitPointerLock();
+  hud.setEndScreenCountSelectorVisible(true);
+  hud.showEndScreen(playerWon ? 'VICTORY' : 'DEFEAT', playerWon ? 'victory' : 'defeat', null);
+  hud.setRestartAction('RESTART', startRound);
   if (playerWon) sound.victory();
   else sound.defeat();
+}
+
+function handleSurvivalDefeat() {
+  state = 'ENDED';
+  hud.hideHUD();
   if (document.pointerLockElement) document.exitPointerLock();
+  hud.setEndScreenCountSelectorVisible(false);
+  hud.showEndScreen('DEFEAT', 'defeat', `Reached round ${survivalRound} of ${SURVIVAL_MAX_ROUND}`);
+  hud.setRestartAction('RESTART', restartSurvivalRun);
+  sound.defeat();
+}
+
+function handleSurvivalComplete() {
+  state = 'ENDED';
+  hud.hideHUD();
+  if (document.pointerLockElement) document.exitPointerLock();
+  hud.setEndScreenCountSelectorVisible(false);
+  hud.showEndScreen('SURVIVED!', 'victory', `All ${SURVIVAL_MAX_ROUND} rounds cleared`);
+  hud.setRestartAction('MENU', exitToNormalMode);
+  sound.victory();
+}
+
+function handleSurvivalRoundCleared() {
+  if (survivalRound >= SURVIVAL_MAX_ROUND) {
+    handleSurvivalComplete();
+    return;
+  }
+  survivalRound += 1;
+  state = 'ROUND_TRANSITION';
+  hud.hideHUD();
+  if (document.pointerLockElement) document.exitPointerLock();
+  hud.showRoundTransition(survivalRound, survivalRound);
 }
 
 const clock = new THREE.Clock();
@@ -160,9 +236,11 @@ renderer.setAnimationLoop(() => {
     hud.updateHealth(player.health, bots.map((b) => b.health));
 
     if (!player.isAlive) {
-      endRound(false);
+      if (mode === 'SURVIVAL') handleSurvivalDefeat();
+      else handleNormalRoundEnd(false);
     } else if (bots.every((b) => !b.isAlive)) {
-      endRound(true);
+      if (mode === 'SURVIVAL') handleSurvivalRoundCleared();
+      else handleNormalRoundEnd(true);
     }
   }
 

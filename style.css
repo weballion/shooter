@@ -289,6 +289,24 @@ button:hover {
   filter: brightness(1.1);
 }
 
+.panel button + button,
+.panel button + .secondary-button {
+  margin-top: 14px;
+}
+
+.secondary-button {
+  color: #7dfcff;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  box-shadow: none;
+}
+
+.secondary-button:hover {
+  filter: none;
+  border-color: rgba(0, 255, 255, 0.9);
+  background: rgba(0, 255, 255, 0.08);
+}
+
 #end-title.victory {
   color: #7dfcff;
 }
@@ -296,4 +314,60 @@ button:hover {
 #end-title.defeat {
   color: #ff5c5c;
   text-shadow: 0 0 16px rgba(255, 46, 78, 0.8);
+}
+
+#end-subtitle {
+  color: #b8c9d9;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.mode-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0;
+  color: #5a7a8a;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.mode-divider::before,
+.mode-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 255, 255, 0.25);
+}
+
+.survival-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.carry-health-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #d7f7ff;
+  cursor: pointer;
+}
+
+.carry-health-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: #00e5ff;
+  cursor: pointer;
+}
+
+#round-title {
+  color: #ff2ec4;
+  text-shadow: 0 0 16px rgba(255, 46, 196, 0.8);
+}
+
+#round-subtitle {
+  color: #d7f7ff;
 }

@@ -51,13 +51,24 @@
       </div>
     </div>
     <button id="start-button">START</button>
+
+    <div class="mode-divider"><span>OR</span></div>
+
+    <div class="survival-block">
+      <label class="carry-health-toggle">
+        <input type="checkbox" id="carry-health-checkbox" checked />
+        <span>Carry health between rounds</span>
+      </label>
+      <button id="survival-button" class="secondary-button">SURVIVAL — 4 ROUNDS</button>
+    </div>
   </div>
 </div>
 
 <div id="end-screen" class="overlay hidden">
   <div class="panel">
     <h1 id="end-title">—</h1>
-    <div class="enemy-count-selector">
+    <p id="end-subtitle" class="hidden"></p>
+    <div id="end-enemy-selector" class="enemy-count-selector">
       <span class="selector-label">ENEMIES</span>
       <div class="count-buttons" data-screen="end">
         <button class="count-btn" data-count="1">1</button>
@@ -70,10 +81,20 @@
   </div>
 </div>
 
+<div id="round-screen" class="overlay hidden">
+  <div class="panel">
+    <h1 id="round-title">ROUND 1</h1>
+    <p id="round-subtitle"></p>
+    <button id="continue-round-button">CONTINUE</button>
+    <button id="exit-survival-button" class="secondary-button">EXIT TO NORMAL MODE</button>
+  </div>
+</div>
+
 <div id="pause-screen" class="overlay hidden">
   <div class="panel">
     <h1>PAUSED</h1>
     <button id="resume-button">RESUME</button>
+    <button id="pause-exit-survival-button" class="secondary-button hidden">EXIT TO NORMAL MODE</button>
   </div>
 </div>
 

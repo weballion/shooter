@@ -17,9 +17,12 @@ no server-side code, running entirely in the browser.
 - Sci-fi neon arena with cover pillars and glowing walls
 - Choose 1–4 aggressive AI opponents (default: 1) from the start or
   end-of-round screen — each chases, takes cover, strafes, and shoots
+- **Survival mode**: 4 rounds, +1 enemy each round, optional health
+  carry-over between rounds — die and you're back to round 1
 - Health bars, tracer-bolt shot visualization, floating damage numbers
 - Synthesized sound effects (no external audio files)
-- Pause menu (Escape)
+- Pause menu (Escape), with a mid-run exit back to normal mode during
+  Survival
 
 **Controls**
 
@@ -64,10 +67,14 @@ No internet connection is required — Three.js is bundled locally in
 - Выбор количества противников от 1 до 4 (по умолчанию — 1) на экране
   старта или в конце раунда — каждый преследует, использует укрытия,
   двигается боком и стреляет
+- **Режим "На выживание"**: 4 раунда, +1 враг за раунд, можно
+  переносить здоровье между раундами или начинать каждый раунд
+  заново — при смерти забег начинается с раунда 1
 - Полоски здоровья, визуализация выстрелов (трассеры), всплывающие
   цифры урона
 - Синтезированные звуковые эффекты (без внешних аудиофайлов)
-- Меню паузы (Escape)
+- Меню паузы (Escape), с возможностью выйти в обычный режим прямо
+  посреди забега "на выживание"
 
 **Управление**
 

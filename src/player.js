@@ -26,13 +26,22 @@ export class Player {
     this._syncCamera();
   }
 
-  reset() {
+  /** Resets position/aim only — used between survival rounds when health carries over. */
+  resetPosition() {
     this.position.copy(START_POSITION);
     this.yaw = 0;
     this.pitch = 0;
-    this.health = MAX_HEALTH;
     this.fireTimer = 0;
     this._syncCamera();
+  }
+
+  resetHealth() {
+    this.health = MAX_HEALTH;
+  }
+
+  reset() {
+    this.resetPosition();
+    this.resetHealth();
   }
 
   get isAlive() {
