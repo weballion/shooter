@@ -25,6 +25,8 @@ no server-side code, running entirely in the browser.
   Survival
 - Playable on phones/tablets — on-screen joystick, look-drag, and fire/pause
   buttons appear automatically on touch devices
+- Optional health pickups scattered around the arena and a camera-shake hit
+  effect — both toggleable on the start screen
 
 **Controls (desktop)**
 
@@ -88,6 +90,8 @@ No internet connection is required — Three.js is bundled locally in
   посреди забега "на выживание"
 - Играбельно на телефоне/планшете — на сенсорных устройствах
   автоматически появляются джойстик, драг-обзор и кнопки огня/паузы
+- Опциональные аптечки на арене и тряска камеры при получении урона —
+  оба переключаются на стартовом экране
 
 **Управление (десктоп)**
 

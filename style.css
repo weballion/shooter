@@ -483,7 +483,7 @@ button:hover {
   background: rgba(255, 46, 196, 0.08);
 }
 
-.carry-health-toggle {
+.checkbox-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -494,7 +494,18 @@ button:hover {
   margin-bottom: 18px;
 }
 
-.carry-health-toggle input {
+.options-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+
+.options-row .checkbox-toggle {
+  margin-bottom: 0;
+}
+
+.checkbox-toggle input {
   width: 16px;
   height: 16px;
   accent-color: #00e5ff;

@@ -13,6 +13,8 @@ export class HUD {
     this.startButtonEl = document.getElementById('start-button');
     this.survivalButtonEl = document.getElementById('survival-button');
     this.carryHealthCheckboxEl = document.getElementById('carry-health-checkbox');
+    this.pickupsCheckboxEl = document.getElementById('pickups-checkbox');
+    this.cameraShakeCheckboxEl = document.getElementById('camera-shake-checkbox');
 
     this.endScreenEl = document.getElementById('end-screen');
     this.endTitleEl = document.getElementById('end-title');
@@ -60,6 +62,14 @@ export class HUD {
 
   getCarryHealth() {
     return this.carryHealthCheckboxEl.checked;
+  }
+
+  getPickupsEnabled() {
+    return this.pickupsCheckboxEl.checked;
+  }
+
+  getCameraShakeEnabled() {
+    return this.cameraShakeCheckboxEl.checked;
   }
 
   /** (Re)builds one health-bar row per bot, in arena/spawn order. */

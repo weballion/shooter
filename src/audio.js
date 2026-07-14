@@ -71,6 +71,10 @@ export class SoundManager {
     this._tone({ freqStart: 1200, freqEnd: 800, duration: 0.06, type: 'triangle', volume: 0.2, delay: 0.01 });
   }
 
+  pickupHeal() {
+    this._tone({ freqStart: 500, freqEnd: 900, duration: 0.15, type: 'sine', volume: 0.18 });
+  }
+
   gameStart() {
     this._tone({ freqStart: 220, freqEnd: 880, duration: 0.35, type: 'sine', volume: 0.2 });
   }

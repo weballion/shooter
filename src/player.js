@@ -10,6 +10,8 @@ const FIRE_COOLDOWN = 0.3;
 const MAX_HEALTH = 100;
 const DAMAGE_PER_HIT = 20;
 const MAX_RANGE = 70;
+const SHAKE_DURATION = 0.3;
+const SHAKE_MAGNITUDE = 0.05;
 
 export class Player {
   constructor() {
@@ -22,6 +24,8 @@ export class Player {
     this.raycaster = new THREE.Raycaster();
     this._forward = new THREE.Vector3();
     this._right = new THREE.Vector3();
+    this.shakeEnabled = true;
+    this._shakeTime = 0;
 
     this._syncCamera();
   }
@@ -32,6 +36,7 @@ export class Player {
     this.yaw = 0;
     this.pitch = 0;
     this.fireTimer = 0;
+    this._shakeTime = 0;
     this._syncCamera();
   }
 
@@ -48,11 +53,23 @@ export class Player {
     return this.health > 0;
   }
 
+  get isFullHealth() {
+    return this.health >= MAX_HEALTH;
+  }
+
   _syncCamera() {
     this.camera.position.set(this.position.x, EYE_HEIGHT, this.position.z);
     this.camera.rotation.order = 'YXZ';
     this.camera.rotation.y = this.yaw;
     this.camera.rotation.x = this.pitch;
+
+    if (this._shakeTime > 0) {
+      const strength = (this._shakeTime / SHAKE_DURATION) * SHAKE_MAGNITUDE;
+      this.camera.rotation.x += (Math.random() - 0.5) * strength;
+      this.camera.rotation.y += (Math.random() - 0.5) * strength;
+      this.camera.position.x += (Math.random() - 0.5) * strength;
+      this.camera.position.y += (Math.random() - 0.5) * strength;
+    }
   }
 
   update(delta, input, arena, bots) {
@@ -93,6 +110,9 @@ export class Player {
       moveWithCollision(this.position, dx, dz, RADIUS, arena.colliders, arena.halfSize);
     }
 
+    if (this._shakeTime > 0) {
+      this._shakeTime = Math.max(0, this._shakeTime - delta);
+    }
     this._syncCamera();
 
     if (this.fireTimer > 0) {
@@ -132,5 +152,10 @@ export class Player {
 
   takeDamage(amount) {
     this.health = Math.max(0, this.health - amount);
+    if (this.shakeEnabled) this._shakeTime = SHAKE_DURATION;
+  }
+
+  heal(amount) {
+    this.health = Math.min(MAX_HEALTH, this.health + amount);
   }
 }

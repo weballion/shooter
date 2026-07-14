@@ -7,6 +7,7 @@ import { HUD } from './hud.js';
 import { Effects } from './effects.js';
 import { DamageNumbers } from './damageNumbers.js';
 import { SoundManager } from './audio.js';
+import { Pickups } from './pickups.js';
 
 const PLAYER_BOLT_COLOR = 0x00e5ff;
 const BOT_BOLT_COLOR = 0xff2ec4;
@@ -54,11 +55,13 @@ const hud = new HUD();
 const effects = new Effects(scene);
 const damageNumbers = new DamageNumbers(document.getElementById('damage-numbers'));
 const sound = new SoundManager();
+const pickups = new Pickups(scene);
 
 let state = 'START'; // 'START' | 'PLAYING' | 'PAUSED' | 'ROUND_TRANSITION' | 'ENDED'
 let mode = 'NORMAL'; // 'NORMAL' | 'SURVIVAL'
 let survivalRound = 1;
 let carryHealth = true;
+let pickupsEnabled = true;
 
 function spawnBots(count) {
   bots.forEach((b) => scene.remove(b.mesh));
@@ -69,6 +72,11 @@ function spawnBots(count) {
 function beginRound(enemyCount, fullReset) {
   if (fullReset) player.reset();
   else player.resetPosition();
+  player.shakeEnabled = hud.getCameraShakeEnabled();
+
+  pickupsEnabled = hud.getPickupsEnabled();
+  if (pickupsEnabled) pickups.activate();
+  else pickups.deactivate();
 
   spawnBots(enemyCount);
   hud.setupEnemyHealthBars(bots.length);
@@ -105,6 +113,7 @@ function exitToNormalMode() {
   state = 'START';
   bots.forEach((b) => scene.remove(b.mesh));
   bots = [];
+  pickups.deactivate();
   if (document.pointerLockElement) document.exitPointerLock();
   hud.hideHUD();
   hud.hideEndScreen();
@@ -241,6 +250,14 @@ renderer.setAnimationLoop(() => {
       }
     }
     separateBots(bots);
+
+    if (pickupsEnabled) {
+      const healed = pickups.update(delta, player);
+      if (healed > 0) {
+        player.heal(healed);
+        sound.pickupHeal();
+      }
+    }
 
     effects.update(delta);
     damageNumbers.update(delta, player.camera);
