@@ -325,6 +325,14 @@ html, body {
   margin-bottom: 24px;
 }
 
+.theme-selector {
+  justify-content: flex-start;
+  /* Matches .mode-card's left padding so ARENA lines up with the
+     NORMAL card's ENEMIES row underneath instead of centering across
+     the whole (wider) panel. */
+  padding-left: 24px;
+}
+
 .selector-label,
 .theme-label {
   font-size: 13px;
@@ -545,5 +553,12 @@ button:hover {
 
   .mode-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Single-column layout below — the alignment-with-NORMAL-card trick
+     no longer applies, so go back to centered like everything else. */
+  .theme-selector {
+    justify-content: center;
+    padding-left: 0;
   }
 }

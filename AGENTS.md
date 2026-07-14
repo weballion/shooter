@@ -11,14 +11,19 @@ deliberate, not oversights.
   internet connection. Don't point the importmap back at unpkg/CDN.
 - **Audio is 100% synthesized** (`src/audio.js`, Web Audio oscillators/noise).
   No external audio files — keep it that way rather than adding assets.
-- **Bot faces are the one deliberate exception to "no external assets."**
-  `assets/faces/face1.png` .. `face7.png` (any subset, user-supplied — none
-  are committed) get shuffled onto bots without repeats by `src/faces.js`;
-  missing files are skipped, not errors, so the game works with zero, one,
-  or all seven present, falling back to `bot.js`'s procedural visor
-  otherwise. If you add a face-image mesh: `CircleGeometry`'s front face
-  normal is +Z by default, so it needs `rotation.y = Math.PI` to face the
-  bot's front (-Z) right-reading rather than mirrored — bit this once
+- **Bot faces are the one deliberate exception to "no external assets" —
+  and they're gitignored on purpose, never commit them.**
+  `assets/faces/face1.png` .. `face10.png` (any subset, user-supplied) get
+  shuffled onto bots without repeats by `src/faces.js`; missing files are
+  skipped, not errors, so the game works with zero through all ten
+  present, falling back to `bot.js`'s procedural visor otherwise. These
+  are typically real people's photos — `.gitignore` excludes
+  `assets/faces/*.png|jpg|jpeg` specifically so they stay local. Don't
+  `git add -f` them or move the feature to committed sample images without
+  checking with the user first. If you add a face-image mesh:
+  `CircleGeometry`'s front face normal is +Z by default, so it needs
+  `rotation.y = Math.PI` to face the bot's front (-Z) right-reading
+  rather than mirrored — bit this once
   already, along with `side: THREE.DoubleSide` so a wrong-orientation disc
   fails loud (mirrored) instead of silently invisible.
 - **Controls are fixed by design:** arrows move/strafe, mouse looks

@@ -11,3 +11,9 @@ Thumbs.db
 
 # Node (in case local tooling is ever added)
 node_modules/
+
+# Custom bot face photos are local-only, deliberately never committed —
+# see assets/faces/README.md
+assets/faces/*.png
+assets/faces/*.jpg
+assets/faces/*.jpeg
