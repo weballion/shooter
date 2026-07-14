@@ -65,6 +65,7 @@ let mode = 'NORMAL'; // 'NORMAL' | 'SURVIVAL'
 let survivalRound = 1;
 let carryHealth = true;
 let pickupsEnabled = true;
+let facesEnabled = true;
 let faceTextures = [];
 loadFaceTextures().then((textures) => {
   faceTextures = textures; // any round already in progress keeps its bots as-is
@@ -72,7 +73,7 @@ loadFaceTextures().then((textures) => {
 
 function spawnBots(count) {
   bots.forEach((b) => scene.remove(b.mesh));
-  const faces = pickRandomFaces(faceTextures, count);
+  const faces = facesEnabled ? pickRandomFaces(faceTextures, count) : [];
   bots = SPAWN_POINTS.slice(0, count).map((point, i) => new Bot(scene, point, faces[i]));
 }
 
@@ -95,6 +96,7 @@ function beginRound(enemyCount, fullReset) {
   if (pickupsEnabled) pickups.activate();
   else pickups.deactivate();
 
+  facesEnabled = hud.getCustomFacesEnabled();
   spawnBots(enemyCount);
   hud.setupEnemyHealthBars(bots.length);
   hud.updateHealth(player.health, bots.map((b) => b.health));

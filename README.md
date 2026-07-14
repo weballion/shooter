@@ -31,7 +31,8 @@ no server-side code, running entirely in the browser.
   environment re-themes, bot/HUD/bolt colors stay put for readability
 - Optional custom bot faces — drop your own circular PNGs into
   `assets/faces/` (see the README there) and they're shuffled onto bots
-  with no repeats; none supplied, and bots keep the default visor
+  with no repeats; none supplied, and bots keep the default visor.
+  Toggleable on the start screen like pickups/camera shake
 
 **Controls (desktop)**
 
@@ -101,7 +102,8 @@ No internet connection is required — Three.js is bundled locally in
   только окружение, цвета бота/HUD/выстрелов не меняются ради читаемости
 - Опционально свои лица ботов — положи круглые PNG в `assets/faces/`
   (детали в README внутри папки), они случайно раздаются ботам без
-  повторов; если файлов нет — обычный визор по умолчанию
+  повторов; если файлов нет — обычный визор по умолчанию. Переключается
+  на стартовом экране, как аптечки/тряска камеры
 
 **Управление (десктоп)**
 
