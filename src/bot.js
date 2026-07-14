@@ -13,6 +13,35 @@ const MAX_HEALTH = 100;
 const DAMAGE_PER_HIT = 20;
 const LOOKAHEAD = 1.4;
 
+/** Sci-fi visor mask mounted on the front of the head, facing local -Z. */
+function buildFace() {
+  const face = new THREE.Group();
+
+  const plate = new THREE.Mesh(
+    new THREE.BoxGeometry(0.5, 0.32, 0.04),
+    new THREE.MeshStandardMaterial({ color: 0x05030a, roughness: 0.3, metalness: 0.5 })
+  );
+  plate.position.set(0, 0.85, -0.42);
+  face.add(plate);
+
+  const visorMaterial = new THREE.MeshStandardMaterial({
+    color: 0x001a1f,
+    emissive: new THREE.Color(0x8affff),
+    emissiveIntensity: 1.4,
+    roughness: 0.2,
+  });
+
+  const visor = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.07, 0.02), visorMaterial);
+  visor.position.set(0, 0.9, -0.445);
+  face.add(visor);
+
+  const vent = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.03, 0.02), visorMaterial);
+  vent.position.set(0, 0.74, -0.445);
+  face.add(vent);
+
+  return face;
+}
+
 function buildMesh() {
   const geometry = new THREE.CapsuleGeometry(0.45, BODY_HEIGHT, 4, 8);
   const material = new THREE.MeshStandardMaterial({
@@ -24,6 +53,7 @@ function buildMesh() {
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.copy(START_POSITION);
   mesh.position.y = BODY_HEIGHT / 2 + 0.45;
+  mesh.add(buildFace());
 
   const glow = new THREE.PointLight(0xff2ec4, 0.8, 6);
   glow.position.set(0, 0.6, 0);
@@ -113,8 +143,8 @@ export class Bot {
     const losClear = player.isAlive && this._hasLineOfSight(player.camera.position, arena);
     this.state = losClear && distance <= ENGAGE_RANGE ? 'ENGAGE' : 'CHASE';
 
-    // Face the player.
-    this.mesh.rotation.y = Math.atan2(dirToPlayer.x, dirToPlayer.z);
+    // Face the player (matches three.js's -Z-forward convention; see player.js).
+    this.mesh.rotation.y = Math.atan2(dirToPlayer.x, dirToPlayer.z) + Math.PI;
 
     let moveDir = null;
     if (this.state === 'ENGAGE') {
