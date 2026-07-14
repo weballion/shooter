@@ -117,11 +117,10 @@ hud.onStart(startRound);
 hud.onSurvivalStart(startSurvivalRun);
 hud.onContinueRound(() => beginRound(survivalRound, !carryHealth));
 hud.onExitSurvival(exitToNormalMode);
-hud.onPauseExitSurvival(exitToNormalMode);
+hud.onPauseMenu(exitToNormalMode);
 
 function pauseRound() {
   state = 'PAUSED';
-  hud.setPauseExitVisible(mode === 'SURVIVAL');
   hud.showPauseScreen();
   if (document.pointerLockElement) document.exitPointerLock();
 }

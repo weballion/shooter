@@ -22,7 +22,7 @@ export class HUD {
 
     this.pauseScreenEl = document.getElementById('pause-screen');
     this.resumeButtonEl = document.getElementById('resume-button');
-    this.pauseExitSurvivalButtonEl = document.getElementById('pause-exit-survival-button');
+    this.pauseMenuButtonEl = document.getElementById('pause-menu-button');
 
     this.roundScreenEl = document.getElementById('round-screen');
     this.roundTitleEl = document.getElementById('round-title');
@@ -99,8 +99,8 @@ export class HUD {
     this.resumeButtonEl.addEventListener('click', callback);
   }
 
-  onPauseExitSurvival(callback) {
-    this.pauseExitSurvivalButtonEl.addEventListener('click', callback);
+  onPauseMenu(callback) {
+    this.pauseMenuButtonEl.addEventListener('click', callback);
   }
 
   onContinueRound(callback) {
@@ -159,10 +159,6 @@ export class HUD {
 
   hidePauseScreen() {
     this.pauseScreenEl.classList.add('hidden');
-  }
-
-  setPauseExitVisible(visible) {
-    this.pauseExitSurvivalButtonEl.classList.toggle('hidden', !visible);
   }
 
   showRoundTransition(roundNumber, enemyCount) {
