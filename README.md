@@ -8,14 +8,15 @@
 
 ## English
 
-A browser-based 3D first-person shooter. Fight a single AI-controlled
-opponent to the death in a walled sci-fi neon arena. Built with
+A browser-based 3D first-person shooter. Fight 1 to 4 AI-controlled
+opponents to the death in a walled sci-fi neon arena. Built with
 [Three.js](https://threejs.org/) — a static site with no build step and
 no server-side code, running entirely in the browser.
 
 **Features**
 - Sci-fi neon arena with cover pillars and glowing walls
-- One aggressive AI opponent that chases, takes cover, strafes, and shoots
+- Choose 1–4 aggressive AI opponents (default: 1) from the start or
+  end-of-round screen — each chases, takes cover, strafes, and shoots
 - Health bars, tracer-bolt shot visualization, floating damage numbers
 - Synthesized sound effects (no external audio files)
 - Pause menu (Escape)
@@ -53,14 +54,15 @@ No internet connection is required — Three.js is bundled locally in
 
 ## Русский
 
-Браузерный 3D-шутер от первого лица. Сражайся насмерть с одним
-противником, управляемым компьютером, на арене в sci-fi неоновом стиле.
-Сделано на [Three.js](https://threejs.org/) — статический сайт без
-сборки и без серверного кода, всё работает прямо в браузере.
+Браузерный 3D-шутер от первого лица. Сражайся насмерть с 1-4
+противниками, управляемыми компьютером, на арене в sci-fi неоновом
+стиле. Сделано на [Three.js](https://threejs.org/) — статический сайт
+без сборки и без серверного кода, всё работает прямо в браузере.
 
 **Возможности**
 - Неоновая sci-fi арена с укрытиями и светящимися стенами
-- Один агрессивный AI-противник: преследует, использует укрытия,
+- Выбор количества противников от 1 до 4 (по умолчанию — 1) на экране
+  старта или в конце раунда — каждый преследует, использует укрытия,
   двигается боком и стреляет
 - Полоски здоровья, визуализация выстрелов (трассеры), всплывающие
   цифры урона

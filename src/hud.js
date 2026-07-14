@@ -1,10 +1,13 @@
+const DEFAULT_ENEMY_COUNT = 1;
+
 export class HUD {
   constructor() {
     this.hudEl = document.getElementById('hud');
     this.crosshairEl = document.getElementById('crosshair');
     this.hitMarkerEl = document.getElementById('hit-marker');
     this.playerFillEl = document.getElementById('player-health-fill');
-    this.botFillEl = document.getElementById('bot-health-fill');
+    this.enemyListEl = document.getElementById('enemy-health-list');
+    this.enemyFillEls = [];
 
     this.startScreenEl = document.getElementById('start-screen');
     this.startButtonEl = document.getElementById('start-button');
@@ -18,6 +21,51 @@ export class HUD {
 
     this._hitMarkerTimeout = null;
     this._crosshairTimeout = null;
+
+    this.enemyCount = DEFAULT_ENEMY_COUNT;
+    this.countButtonEls = document.querySelectorAll('.count-btn');
+    this.countButtonEls.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.enemyCount = parseInt(btn.dataset.count, 10);
+        this._refreshCountButtons();
+      });
+    });
+    this._refreshCountButtons();
+  }
+
+  _refreshCountButtons() {
+    this.countButtonEls.forEach((btn) => {
+      btn.classList.toggle('selected', parseInt(btn.dataset.count, 10) === this.enemyCount);
+    });
+  }
+
+  getEnemyCount() {
+    return this.enemyCount;
+  }
+
+  /** (Re)builds one health-bar row per bot, in arena/spawn order. */
+  setupEnemyHealthBars(count) {
+    this.enemyListEl.innerHTML = '';
+    this.enemyFillEls = [];
+    for (let i = 0; i < count; i++) {
+      const row = document.createElement('div');
+      row.className = 'health-row reverse';
+
+      const label = document.createElement('span');
+      label.className = 'health-label';
+      label.textContent = count === 1 ? 'BOT' : `B${i + 1}`;
+
+      const bar = document.createElement('div');
+      bar.className = 'health-bar';
+      const fill = document.createElement('div');
+      fill.className = 'health-fill bot';
+      bar.appendChild(fill);
+
+      row.appendChild(label);
+      row.appendChild(bar);
+      this.enemyListEl.appendChild(row);
+      this.enemyFillEls.push(fill);
+    }
   }
 
   onStart(callback) {
@@ -66,9 +114,11 @@ export class HUD {
     this.pauseScreenEl.classList.add('hidden');
   }
 
-  updateHealth(playerHealth, botHealth) {
+  updateHealth(playerHealth, botHealths) {
     this.playerFillEl.style.width = `${Math.max(0, playerHealth)}%`;
-    this.botFillEl.style.width = `${Math.max(0, botHealth)}%`;
+    botHealths.forEach((health, i) => {
+      if (this.enemyFillEls[i]) this.enemyFillEls[i].style.width = `${Math.max(0, health)}%`;
+    });
   }
 
   flashCrosshair() {

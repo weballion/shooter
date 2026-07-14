@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createArena } from './arena.js';
 import { Player } from './player.js';
-import { Bot } from './bot.js';
+import { Bot, SPAWN_POINTS, RADIUS as BOT_RADIUS } from './bot.js';
 import { InputManager } from './input.js';
 import { HUD } from './hud.js';
 import { Effects } from './effects.js';
@@ -10,6 +10,31 @@ import { SoundManager } from './audio.js';
 
 const PLAYER_BOLT_COLOR = 0x00e5ff;
 const BOT_BOLT_COLOR = 0xff2ec4;
+
+/** Keeps bots from overlapping each other by pushing apart any pair that's too close. */
+function separateBots(bots) {
+  for (let i = 0; i < bots.length; i++) {
+    for (let j = i + 1; j < bots.length; j++) {
+      const a = bots[i];
+      const b = bots[j];
+      if (!a.isAlive || !b.isAlive) continue;
+
+      const dx = b.position.x - a.position.x;
+      const dz = b.position.z - a.position.z;
+      const dist = Math.hypot(dx, dz);
+      const minDist = BOT_RADIUS * 2;
+      if (dist > 0 && dist < minDist) {
+        const push = (minDist - dist) / 2;
+        const nx = dx / dist;
+        const nz = dz / dist;
+        a.position.x -= nx * push;
+        a.position.z -= nz * push;
+        b.position.x += nx * push;
+        b.position.z += nz * push;
+      }
+    }
+  }
+}
 
 const container = document.getElementById('game-container');
 
@@ -22,7 +47,7 @@ const scene = new THREE.Scene();
 const arena = createArena(scene);
 
 const player = new Player();
-const bot = new Bot(scene);
+let bots = [];
 const input = new InputManager(renderer.domElement);
 const hud = new HUD();
 const effects = new Effects(scene);
@@ -31,10 +56,16 @@ const sound = new SoundManager();
 
 let state = 'START'; // 'START' | 'PLAYING' | 'PAUSED' | 'ENDED'
 
+function spawnBots(count) {
+  bots.forEach((b) => scene.remove(b.mesh));
+  bots = SPAWN_POINTS.slice(0, count).map((point) => new Bot(scene, point));
+}
+
 function startRound() {
   player.reset();
-  bot.reset();
-  hud.updateHealth(player.health, bot.health);
+  spawnBots(hud.getEnemyCount());
+  hud.setupEnemyHealthBars(bots.length);
+  hud.updateHealth(player.health, bots.map((b) => b.health));
   hud.hideStartScreen();
   hud.hideEndScreen();
   hud.hidePauseScreen();
@@ -93,41 +124,44 @@ renderer.setAnimationLoop(() => {
   const delta = Math.min(clock.getDelta(), 0.1);
 
   if (state === 'PLAYING') {
-    const playerShot = player.update(delta, input, arena, bot);
+    const playerShot = player.update(delta, input, arena, bots);
     if (playerShot) {
       hud.flashCrosshair();
       sound.playerShoot();
       effects.spawnBolt(playerShot.origin, playerShot.impactPoint, PLAYER_BOLT_COLOR, () => {
         if (playerShot.hitBot) {
-          bot.takeDamage(playerShot.damage);
+          playerShot.hitBot.takeDamage(playerShot.damage);
           hud.showHitMarker();
           sound.hitConfirmed();
-          const above = bot.position.clone();
+          const above = playerShot.hitBot.position.clone();
           above.y += 1.6;
           damageNumbers.spawn(above, playerShot.damage, '#ff2ec4');
         }
       });
     }
 
-    const botShot = bot.update(delta, player, arena);
-    if (botShot) {
-      sound.botShoot();
-      effects.spawnBolt(botShot.origin, botShot.impactPoint, BOT_BOLT_COLOR, () => {
-        if (botShot.hit) {
-          player.takeDamage(botShot.damage);
-          sound.hitConfirmed();
-        }
-      });
+    for (const bot of bots) {
+      const botShot = bot.update(delta, player, arena);
+      if (botShot) {
+        sound.botShoot();
+        effects.spawnBolt(botShot.origin, botShot.impactPoint, BOT_BOLT_COLOR, () => {
+          if (botShot.hit) {
+            player.takeDamage(botShot.damage);
+            sound.hitConfirmed();
+          }
+        });
+      }
     }
+    separateBots(bots);
 
     effects.update(delta);
     damageNumbers.update(delta, player.camera);
 
-    hud.updateHealth(player.health, bot.health);
+    hud.updateHealth(player.health, bots.map((b) => b.health));
 
     if (!player.isAlive) {
       endRound(false);
-    } else if (!bot.isAlive) {
+    } else if (bots.every((b) => !b.isAlive)) {
       endRound(true);
     }
   }

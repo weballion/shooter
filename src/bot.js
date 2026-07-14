@@ -1,8 +1,15 @@
 import * as THREE from 'three';
 import { moveWithCollision, isBlockedAt } from './collision.js';
 
-const START_POSITION = new THREE.Vector3(0, 0, -15);
-const RADIUS = 0.5;
+// Spread across the back half of the arena, clear of pillars and each other.
+export const SPAWN_POINTS = [
+  new THREE.Vector3(0, 0, -15),
+  new THREE.Vector3(-15, 0, -12),
+  new THREE.Vector3(15, 0, -12),
+  new THREE.Vector3(0, 0, -3),
+];
+
+export const RADIUS = 0.5;
 const BODY_HEIGHT = 1.3;
 const EYE_OFFSET = 1.6;
 const MOVE_SPEED = 5;
@@ -42,7 +49,7 @@ function buildFace() {
   return face;
 }
 
-function buildMesh() {
+function buildMesh(spawnPosition) {
   const geometry = new THREE.CapsuleGeometry(0.45, BODY_HEIGHT, 4, 8);
   const material = new THREE.MeshStandardMaterial({
     color: 0x220a2a,
@@ -51,7 +58,7 @@ function buildMesh() {
     roughness: 0.4,
   });
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.copy(START_POSITION);
+  mesh.position.copy(spawnPosition);
   mesh.position.y = BODY_HEIGHT / 2 + 0.45;
   mesh.add(buildFace());
 
@@ -81,8 +88,8 @@ function steerAround(position, dir, colliders) {
 }
 
 export class Bot {
-  constructor(scene) {
-    this.mesh = buildMesh();
+  constructor(scene, spawnPosition) {
+    this.mesh = buildMesh(spawnPosition);
     scene.add(this.mesh);
     this.health = MAX_HEALTH;
     this.state = 'CHASE';
@@ -90,14 +97,6 @@ export class Bot {
     this.strafeTimer = 0;
     this.fireTimer = 0;
     this.raycaster = new THREE.Raycaster();
-  }
-
-  reset() {
-    this.mesh.position.copy(START_POSITION);
-    this.mesh.position.y = BODY_HEIGHT / 2 + 0.45;
-    this.health = MAX_HEALTH;
-    this.state = 'CHASE';
-    this.fireTimer = 0;
   }
 
   get isAlive() {

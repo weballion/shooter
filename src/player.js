@@ -46,7 +46,7 @@ export class Player {
     this.camera.rotation.x = this.pitch;
   }
 
-  update(delta, input, arena, bot) {
+  update(delta, input, arena, bots) {
     const look = input.consumeLookDelta();
     this.yaw -= look.x * MOUSE_SENSITIVITY;
     this.pitch -= look.y * MOUSE_SENSITIVITY;
@@ -93,7 +93,7 @@ export class Player {
     let shot = null;
     if (input.firing && this.fireTimer <= 0 && this.isAlive) {
       this.fireTimer = FIRE_COOLDOWN;
-      shot = this._fire(arena, bot);
+      shot = this._fire(arena, bots);
     }
 
     return shot; // null = did not fire; otherwise { origin, impactPoint, hitBot, damage }
@@ -102,16 +102,18 @@ export class Player {
   /**
    * Determines the shot's outcome immediately (hitscan), but leaves applying
    * damage to the caller so it can be timed to a traveling bolt's arrival.
+   * `hitBot` is the specific bot instance hit, or null.
    */
-  _fire(arena, bot) {
+  _fire(arena, bots) {
     const origin = this.camera.position.clone();
     const direction = this.camera.getWorldDirection(new THREE.Vector3());
     this.raycaster.set(origin, direction);
     this.raycaster.far = MAX_RANGE;
 
-    const targets = bot && bot.isAlive ? [bot.mesh, ...arena.colliders] : [...arena.colliders];
+    const aliveBots = (bots || []).filter((b) => b.isAlive);
+    const targets = [...aliveBots.map((b) => b.mesh), ...arena.colliders];
     const hits = this.raycaster.intersectObjects(targets, false);
-    const hitBot = hits.length > 0 && bot && hits[0].object === bot.mesh;
+    const hitBot = hits.length > 0 ? aliveBots.find((b) => b.mesh === hits[0].object) || null : null;
     const impactPoint = hits.length > 0
       ? hits[0].point.clone()
       : origin.clone().add(direction.multiplyScalar(MAX_RANGE));

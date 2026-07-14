@@ -26,17 +26,14 @@
       <span class="health-label">YOU</span>
       <div class="health-bar"><div id="player-health-fill" class="health-fill player"></div></div>
     </div>
-    <div class="health-row">
-      <span class="health-label">BOT</span>
-      <div class="health-bar"><div id="bot-health-fill" class="health-fill bot"></div></div>
-    </div>
+    <div id="enemy-health-list"></div>
   </div>
 </div>
 
 <div id="start-screen" class="overlay">
   <div class="panel">
     <h1>NEON ARENA</h1>
-    <p>Fight the lone sentry to the death in the arena.</p>
+    <p>Fight computer-controlled sentries to the death in the arena.</p>
     <ul class="controls-list">
       <li><span class="key">&uarr; &darr;</span> Move forward / backward</li>
       <li><span class="key">&larr; &rarr;</span> Strafe left / right</li>
@@ -44,6 +41,15 @@
       <li><span class="key">SPACE / LMB</span> Fire</li>
       <li><span class="key">ESC</span> Pause</li>
     </ul>
+    <div class="enemy-count-selector">
+      <span class="selector-label">ENEMIES</span>
+      <div class="count-buttons" data-screen="start">
+        <button class="count-btn" data-count="1">1</button>
+        <button class="count-btn" data-count="2">2</button>
+        <button class="count-btn" data-count="3">3</button>
+        <button class="count-btn" data-count="4">4</button>
+      </div>
+    </div>
     <button id="start-button">START</button>
   </div>
 </div>
@@ -51,6 +57,15 @@
 <div id="end-screen" class="overlay hidden">
   <div class="panel">
     <h1 id="end-title">—</h1>
+    <div class="enemy-count-selector">
+      <span class="selector-label">ENEMIES</span>
+      <div class="count-buttons" data-screen="end">
+        <button class="count-btn" data-count="1">1</button>
+        <button class="count-btn" data-count="2">2</button>
+        <button class="count-btn" data-count="3">3</button>
+        <button class="count-btn" data-count="4">4</button>
+      </div>
+    </div>
     <button id="restart-button">RESTART</button>
   </div>
 </div>
