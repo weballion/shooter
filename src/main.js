@@ -210,12 +210,20 @@ renderer.setAnimationLoop(() => {
       sound.playerShoot();
       effects.spawnBolt(playerShot.origin, playerShot.impactPoint, PLAYER_BOLT_COLOR, () => {
         if (playerShot.hitBot) {
-          playerShot.hitBot.takeDamage(playerShot.damage);
+          const hitBot = playerShot.hitBot;
+          hitBot.takeDamage(playerShot.damage);
           hud.showHitMarker();
           sound.hitConfirmed();
-          const above = playerShot.hitBot.position.clone();
+          const above = hitBot.position.clone();
           above.y += 1.6;
           damageNumbers.spawn(above, playerShot.damage, '#ff2ec4');
+
+          if (!hitBot.isAlive) {
+            const deathPos = hitBot.position.clone();
+            deathPos.y += 1;
+            effects.spawnExplosion(deathPos, BOT_BOLT_COLOR);
+            scene.remove(hitBot.mesh);
+          }
         }
       });
     }
