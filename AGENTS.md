@@ -11,6 +11,16 @@ deliberate, not oversights.
   internet connection. Don't point the importmap back at unpkg/CDN.
 - **Audio is 100% synthesized** (`src/audio.js`, Web Audio oscillators/noise).
   No external audio files — keep it that way rather than adding assets.
+- **Bot faces are the one deliberate exception to "no external assets."**
+  `assets/faces/face1.png` .. `face7.png` (any subset, user-supplied — none
+  are committed) get shuffled onto bots without repeats by `src/faces.js`;
+  missing files are skipped, not errors, so the game works with zero, one,
+  or all seven present, falling back to `bot.js`'s procedural visor
+  otherwise. If you add a face-image mesh: `CircleGeometry`'s front face
+  normal is +Z by default, so it needs `rotation.y = Math.PI` to face the
+  bot's front (-Z) right-reading rather than mirrored — bit this once
+  already, along with `side: THREE.DoubleSide` so a wrong-orientation disc
+  fails loud (mirrored) instead of silently invisible.
 - **Controls are fixed by design:** arrows move/strafe, mouse looks
   (pointer-lock), Space or left mouse fires, Escape pauses. On touch devices
   (`(pointer: coarse)`), `input.js` also drives the same state from an

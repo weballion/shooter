@@ -9,6 +9,7 @@ import { DamageNumbers } from './damageNumbers.js';
 import { SoundManager } from './audio.js';
 import { Pickups } from './pickups.js';
 import { DEFAULT_ARENA_THEME } from './themes.js';
+import { loadFaceTextures, pickRandomFaces } from './faces.js';
 
 const PLAYER_BOLT_COLOR = 0x00e5ff;
 const BOT_BOLT_COLOR = 0xff2ec4;
@@ -64,10 +65,15 @@ let mode = 'NORMAL'; // 'NORMAL' | 'SURVIVAL'
 let survivalRound = 1;
 let carryHealth = true;
 let pickupsEnabled = true;
+let faceTextures = [];
+loadFaceTextures().then((textures) => {
+  faceTextures = textures; // any round already in progress keeps its bots as-is
+});
 
 function spawnBots(count) {
   bots.forEach((b) => scene.remove(b.mesh));
-  bots = SPAWN_POINTS.slice(0, count).map((point) => new Bot(scene, point));
+  const faces = pickRandomFaces(faceTextures, count);
+  bots = SPAWN_POINTS.slice(0, count).map((point, i) => new Bot(scene, point, faces[i]));
 }
 
 function applyArenaTheme(themeKey) {

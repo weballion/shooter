@@ -49,7 +49,25 @@ function buildFace() {
   return face;
 }
 
-function buildMesh(spawnPosition) {
+/**
+ * A supplied photo/avatar, shown as a circular disc in place of the visor.
+ * Pushed out to z=-0.52 (beyond the capsule's 0.45 max radius everywhere
+ * along the disc's height) so the capsule's own opaque surface never
+ * z-fights or clips it.
+ */
+function buildFaceImage(texture) {
+  const disc = new THREE.Mesh(
+    new THREE.CircleGeometry(0.32, 24),
+    new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide })
+  );
+  disc.position.set(0, 0.85, -0.52);
+  // CircleGeometry's front face normal is +Z by default; flip it to face
+  // -Z (the bot's front) so the texture reads correctly, not mirrored.
+  disc.rotation.y = Math.PI;
+  return disc;
+}
+
+function buildMesh(spawnPosition, faceTexture) {
   const geometry = new THREE.CapsuleGeometry(0.45, BODY_HEIGHT, 4, 8);
   const material = new THREE.MeshStandardMaterial({
     color: 0x220a2a,
@@ -60,7 +78,7 @@ function buildMesh(spawnPosition) {
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.copy(spawnPosition);
   mesh.position.y = BODY_HEIGHT / 2 + 0.45;
-  mesh.add(buildFace());
+  mesh.add(faceTexture ? buildFaceImage(faceTexture) : buildFace());
 
   const glow = new THREE.PointLight(0xff2ec4, 0.8, 6);
   glow.position.set(0, 0.6, 0);
@@ -88,8 +106,8 @@ function steerAround(position, dir, colliders) {
 }
 
 export class Bot {
-  constructor(scene, spawnPosition) {
-    this.mesh = buildMesh(spawnPosition);
+  constructor(scene, spawnPosition, faceTexture) {
+    this.mesh = buildMesh(spawnPosition, faceTexture);
     scene.add(this.mesh);
     this.health = MAX_HEALTH;
     this.state = 'CHASE';

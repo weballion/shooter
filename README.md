@@ -29,6 +29,9 @@ no server-side code, running entirely in the browser.
   effect — both toggleable on the start screen
 - 3 selectable arena skins (Neon Grid, Circuit, Deep Space) — only the
   environment re-themes, bot/HUD/bolt colors stay put for readability
+- Optional custom bot faces — drop your own circular PNGs into
+  `assets/faces/` (see the README there) and they're shuffled onto bots
+  with no repeats; none supplied, and bots keep the default visor
 
 **Controls (desktop)**
 
@@ -96,6 +99,9 @@ No internet connection is required — Three.js is bundled locally in
   оба переключаются на стартовом экране
 - 3 скина арены на выбор (Neon Grid, Circuit, Deep Space) — переоформляется
   только окружение, цвета бота/HUD/выстрелов не меняются ради читаемости
+- Опционально свои лица ботов — положи круглые PNG в `assets/faces/`
+  (детали в README внутри папки), они случайно раздаются ботам без
+  повторов; если файлов нет — обычный визор по умолчанию
 
 **Управление (десктоп)**
 
