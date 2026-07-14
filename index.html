@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Neon Arena — 3D FPS</title>
+<link rel="stylesheet" href="style.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="game-container"></div>
+
+<div id="hud" class="hidden">
+  <div id="crosshair"></div>
+  <div id="hit-marker"></div>
+  <div id="health-bars">
+    <div class="health-row">
+      <span class="health-label">YOU</span>
+      <div class="health-bar"><div id="player-health-fill" class="health-fill player"></div></div>
+    </div>
+    <div class="health-row">
+      <span class="health-label">BOT</span>
+      <div class="health-bar"><div id="bot-health-fill" class="health-fill bot"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="start-screen" class="overlay">
+  <div class="panel">
+    <h1>NEON ARENA</h1>
+    <p>Fight the lone sentry to the death in the arena.</p>
+    <ul class="controls-list">
+      <li><span class="key">&uarr; &darr;</span> Move forward / backward</li>
+      <li><span class="key">&larr; &rarr;</span> Strafe left / right</li>
+      <li><span class="key">MOUSE</span> Look around</li>
+      <li><span class="key">SPACE</span> Fire</li>
+    </ul>
+    <button id="start-button">START</button>
+  </div>
+</div>
+
+<div id="end-screen" class="overlay hidden">
+  <div class="panel">
+    <h1 id="end-title">—</h1>
+    <button id="restart-button">RESTART</button>
+  </div>
+</div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

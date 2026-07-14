@@ -1,0 +1,161 @@
+import * as THREE from 'three';
+import { moveWithCollision, isBlockedAt } from './collision.js';
+
+const START_POSITION = new THREE.Vector3(0, 0, -15);
+const RADIUS = 0.5;
+const BODY_HEIGHT = 1.3;
+const EYE_OFFSET = 1.6;
+const MOVE_SPEED = 5;
+const ENGAGE_RANGE = 16;
+const COMFORT_DISTANCE = 8;
+const FIRE_COOLDOWN = 0.6;
+const MAX_HEALTH = 100;
+const DAMAGE_PER_HIT = 20;
+const LOOKAHEAD = 1.4;
+
+function buildMesh() {
+  const geometry = new THREE.CapsuleGeometry(0.45, BODY_HEIGHT, 4, 8);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x220a2a,
+    emissive: new THREE.Color(0xff2ec4),
+    emissiveIntensity: 0.9,
+    roughness: 0.4,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.copy(START_POSITION);
+  mesh.position.y = BODY_HEIGHT / 2 + 0.45;
+
+  const glow = new THREE.PointLight(0xff2ec4, 0.8, 6);
+  glow.position.set(0, 0.6, 0);
+  mesh.add(glow);
+
+  return mesh;
+}
+
+/** Steers a desired movement direction around obstacles directly ahead. */
+function steerAround(position, dir, colliders) {
+  const aheadX = position.x + dir.x * LOOKAHEAD;
+  const aheadZ = position.z + dir.z * LOOKAHEAD;
+  if (!isBlockedAt(aheadX, aheadZ, RADIUS, colliders)) return dir;
+
+  const perp = new THREE.Vector3(-dir.z, 0, dir.x);
+  for (const sign of [1, -1]) {
+    const steered = new THREE.Vector3(dir.x + perp.x * sign, 0, dir.z + perp.z * sign);
+    if (steered.lengthSq() === 0) continue;
+    steered.normalize();
+    const sx = position.x + steered.x * LOOKAHEAD;
+    const sz = position.z + steered.z * LOOKAHEAD;
+    if (!isBlockedAt(sx, sz, RADIUS, colliders)) return steered;
+  }
+  return perp.normalize();
+}
+
+export class Bot {
+  constructor(scene) {
+    this.mesh = buildMesh();
+    scene.add(this.mesh);
+    this.health = MAX_HEALTH;
+    this.state = 'CHASE';
+    this.strafeSign = 1;
+    this.strafeTimer = 0;
+    this.fireTimer = 0;
+    this.raycaster = new THREE.Raycaster();
+  }
+
+  reset() {
+    this.mesh.position.copy(START_POSITION);
+    this.mesh.position.y = BODY_HEIGHT / 2 + 0.45;
+    this.health = MAX_HEALTH;
+    this.state = 'CHASE';
+    this.fireTimer = 0;
+  }
+
+  get isAlive() {
+    return this.health > 0;
+  }
+
+  get position() {
+    return this.mesh.position;
+  }
+
+  _hasLineOfSight(playerCameraPos, arena) {
+    const from = this.position.clone();
+    from.y += EYE_OFFSET - 0.6;
+    const to = playerCameraPos.clone();
+    const dir = to.clone().sub(from);
+    const distance = dir.length();
+    dir.normalize();
+
+    this.raycaster.set(from, dir);
+    this.raycaster.far = distance;
+    const hits = this.raycaster.intersectObjects(arena.colliders, false);
+    return hits.length === 0;
+  }
+
+  update(delta, player, arena) {
+    if (!this.isAlive) return null;
+
+    if (this.fireTimer > 0) this.fireTimer -= delta;
+
+    const toPlayer = new THREE.Vector3(
+      player.position.x - this.position.x,
+      0,
+      player.position.z - this.position.z
+    );
+    const distance = toPlayer.length();
+    const dirToPlayer = distance > 0.0001 ? toPlayer.clone().normalize() : new THREE.Vector3(0, 0, 1);
+
+    const losClear = player.isAlive && this._hasLineOfSight(player.camera.position, arena);
+    this.state = losClear && distance <= ENGAGE_RANGE ? 'ENGAGE' : 'CHASE';
+
+    // Face the player.
+    this.mesh.rotation.y = Math.atan2(dirToPlayer.x, dirToPlayer.z);
+
+    let moveDir = null;
+    if (this.state === 'ENGAGE') {
+      this.strafeTimer -= delta;
+      if (this.strafeTimer <= 0) {
+        this.strafeTimer = 1 + Math.random();
+        this.strafeSign *= -1;
+      }
+      const perp = new THREE.Vector3(-dirToPlayer.z, 0, dirToPlayer.x).multiplyScalar(this.strafeSign);
+
+      if (distance > COMFORT_DISTANCE + 1.5) {
+        moveDir = dirToPlayer.clone().add(perp.clone().multiplyScalar(0.4)).normalize();
+      } else if (distance < COMFORT_DISTANCE - 1.5) {
+        moveDir = dirToPlayer.clone().negate().add(perp.clone().multiplyScalar(0.4)).normalize();
+      } else {
+        moveDir = perp;
+      }
+    } else {
+      moveDir = steerAround(this.position, dirToPlayer, arena.colliders);
+    }
+
+    const step = MOVE_SPEED * delta;
+    moveWithCollision(this.position, moveDir.x * step, moveDir.z * step, RADIUS, arena.colliders, arena.halfSize);
+    this.mesh.position.y = BODY_HEIGHT / 2 + 0.45;
+
+    let hitPlayer = null;
+    if (this.state === 'ENGAGE' && this.fireTimer <= 0) {
+      this.fireTimer = FIRE_COOLDOWN;
+      hitPlayer = this._fireAt(player, distance);
+    }
+
+    return hitPlayer; // null = did not fire, true = hit, false = missed
+  }
+
+  _fireAt(player, distance) {
+    // Accuracy tapers off with distance so the bot is beatable at range.
+    const accuracy = Math.max(0.15, 0.85 - distance / (ENGAGE_RANGE * 1.5));
+    const hit = Math.random() < accuracy;
+    if (hit) {
+      player.takeDamage(DAMAGE_PER_HIT);
+      return true;
+    }
+    return false;
+  }
+
+  takeDamage(amount) {
+    this.health = Math.max(0, this.health - amount);
+  }
+}
