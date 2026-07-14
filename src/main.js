@@ -6,6 +6,7 @@ import { InputManager } from './input.js';
 import { HUD } from './hud.js';
 import { Effects } from './effects.js';
 import { DamageNumbers } from './damageNumbers.js';
+import { SoundManager } from './audio.js';
 
 const PLAYER_BOLT_COLOR = 0x00e5ff;
 const BOT_BOLT_COLOR = 0xff2ec4;
@@ -26,8 +27,9 @@ const input = new InputManager(renderer.domElement);
 const hud = new HUD();
 const effects = new Effects(scene);
 const damageNumbers = new DamageNumbers(document.getElementById('damage-numbers'));
+const sound = new SoundManager();
 
-let state = 'START'; // 'START' | 'PLAYING' | 'ENDED'
+let state = 'START'; // 'START' | 'PLAYING' | 'PAUSED' | 'ENDED'
 
 function startRound() {
   player.reset();
@@ -35,13 +37,36 @@ function startRound() {
   hud.updateHealth(player.health, bot.health);
   hud.hideStartScreen();
   hud.hideEndScreen();
+  hud.hidePauseScreen();
   hud.showHUD();
   input.requestPointerLock();
+  sound.gameStart();
   state = 'PLAYING';
 }
 
 hud.onStart(startRound);
 hud.onRestart(startRound);
+
+function pauseRound() {
+  state = 'PAUSED';
+  hud.showPauseScreen();
+  if (document.pointerLockElement) document.exitPointerLock();
+}
+
+function resumeRound() {
+  state = 'PLAYING';
+  input.mouseDown = false; // avoid an instant shot from the click that resumed
+  hud.hidePauseScreen();
+  input.requestPointerLock();
+}
+
+hud.onResume(resumeRound);
+
+window.addEventListener('keydown', (e) => {
+  if (e.code !== 'Escape') return;
+  if (state === 'PLAYING') pauseRound();
+  else if (state === 'PAUSED') resumeRound();
+});
 
 renderer.domElement.addEventListener('click', () => {
   if (state === 'PLAYING') input.requestPointerLock();
@@ -57,6 +82,8 @@ function endRound(playerWon) {
   state = 'ENDED';
   hud.hideHUD();
   hud.showEndScreen(playerWon);
+  if (playerWon) sound.victory();
+  else sound.defeat();
   if (document.pointerLockElement) document.exitPointerLock();
 }
 
@@ -69,10 +96,12 @@ renderer.setAnimationLoop(() => {
     const playerShot = player.update(delta, input, arena, bot);
     if (playerShot) {
       hud.flashCrosshair();
+      sound.playerShoot();
       effects.spawnBolt(playerShot.origin, playerShot.impactPoint, PLAYER_BOLT_COLOR, () => {
         if (playerShot.hitBot) {
           bot.takeDamage(playerShot.damage);
           hud.showHitMarker();
+          sound.hitConfirmed();
           const above = bot.position.clone();
           above.y += 1.6;
           damageNumbers.spawn(above, playerShot.damage, '#ff2ec4');
@@ -82,8 +111,12 @@ renderer.setAnimationLoop(() => {
 
     const botShot = bot.update(delta, player, arena);
     if (botShot) {
+      sound.botShoot();
       effects.spawnBolt(botShot.origin, botShot.impactPoint, BOT_BOLT_COLOR, () => {
-        if (botShot.hit) player.takeDamage(botShot.damage);
+        if (botShot.hit) {
+          player.takeDamage(botShot.damage);
+          sound.hitConfirmed();
+        }
       });
     }
 

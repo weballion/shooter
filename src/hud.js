@@ -13,6 +13,9 @@ export class HUD {
     this.endTitleEl = document.getElementById('end-title');
     this.restartButtonEl = document.getElementById('restart-button');
 
+    this.pauseScreenEl = document.getElementById('pause-screen');
+    this.resumeButtonEl = document.getElementById('resume-button');
+
     this._hitMarkerTimeout = null;
     this._crosshairTimeout = null;
   }
@@ -23,6 +26,10 @@ export class HUD {
 
   onRestart(callback) {
     this.restartButtonEl.addEventListener('click', callback);
+  }
+
+  onResume(callback) {
+    this.resumeButtonEl.addEventListener('click', callback);
   }
 
   showStartScreen() {
@@ -49,6 +56,14 @@ export class HUD {
 
   hideEndScreen() {
     this.endScreenEl.classList.add('hidden');
+  }
+
+  showPauseScreen() {
+    this.pauseScreenEl.classList.remove('hidden');
+  }
+
+  hidePauseScreen() {
+    this.pauseScreenEl.classList.add('hidden');
   }
 
   updateHealth(playerHealth, botHealth) {
