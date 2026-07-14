@@ -6,6 +6,7 @@
 export const ARENA_THEMES = {
   neon: {
     label: 'NEON GRID',
+    pattern: 'panels',
     background: 0x03030a,
     fogColor: 0x03030a,
     fogNear: 15,
@@ -34,6 +35,7 @@ export const ARENA_THEMES = {
   // digital-arena light-cycle game — not any specific film's branding.
   circuit: {
     label: 'CIRCUIT',
+    pattern: 'circuit',
     background: 0x000000,
     fogColor: 0x000000,
     fogNear: 18,
@@ -62,6 +64,7 @@ export const ARENA_THEMES = {
   // space-opera hangar without copying any specific franchise's assets.
   deepspace: {
     label: 'DEEP SPACE',
+    pattern: 'hangar',
     background: 0x05060c,
     fogColor: 0x05060c,
     fogNear: 20,
