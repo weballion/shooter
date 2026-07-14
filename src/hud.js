@@ -1,3 +1,5 @@
+import { DEFAULT_ARENA_THEME } from './themes.js';
+
 const DEFAULT_ENEMY_COUNT = 1;
 
 export class HUD {
@@ -45,6 +47,16 @@ export class HUD {
       });
     });
     this._refreshCountButtons();
+
+    this.arenaTheme = DEFAULT_ARENA_THEME;
+    this.themeButtonEls = document.querySelectorAll('.theme-btn');
+    this.themeButtonEls.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.arenaTheme = btn.dataset.theme;
+        this._refreshThemeButtons();
+      });
+    });
+    this._refreshThemeButtons();
   }
 
   _refreshCountButtons() {
@@ -56,8 +68,18 @@ export class HUD {
     });
   }
 
+  _refreshThemeButtons() {
+    this.themeButtonEls.forEach((btn) => {
+      btn.classList.toggle('selected', btn.dataset.theme === this.arenaTheme);
+    });
+  }
+
   getEnemyCount() {
     return this.enemyCount;
+  }
+
+  getArenaTheme() {
+    return this.arenaTheme;
   }
 
   getCarryHealth() {

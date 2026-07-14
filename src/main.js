@@ -8,6 +8,7 @@ import { Effects } from './effects.js';
 import { DamageNumbers } from './damageNumbers.js';
 import { SoundManager } from './audio.js';
 import { Pickups } from './pickups.js';
+import { DEFAULT_ARENA_THEME } from './themes.js';
 
 const PLAYER_BOLT_COLOR = 0x00e5ff;
 const BOT_BOLT_COLOR = 0xff2ec4;
@@ -46,7 +47,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 container.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-const arena = createArena(scene);
+let arena = createArena(scene);
+let currentThemeKey = DEFAULT_ARENA_THEME;
 
 const player = new Player();
 let bots = [];
@@ -68,8 +70,17 @@ function spawnBots(count) {
   bots = SPAWN_POINTS.slice(0, count).map((point) => new Bot(scene, point));
 }
 
+function applyArenaTheme(themeKey) {
+  if (themeKey === currentThemeKey) return;
+  arena.dispose();
+  arena = createArena(scene, themeKey);
+  currentThemeKey = themeKey;
+}
+
 /** Common "put the player and bots on the field and go" step for any round. */
 function beginRound(enemyCount, fullReset) {
+  applyArenaTheme(hud.getArenaTheme());
+
   if (fullReset) player.reset();
   else player.resetPosition();
   player.shakeEnabled = hud.getCameraShakeEnabled();

@@ -27,6 +27,8 @@ no server-side code, running entirely in the browser.
   buttons appear automatically on touch devices
 - Optional health pickups scattered around the arena and a camera-shake hit
   effect — both toggleable on the start screen
+- 3 selectable arena skins (Neon Grid, Circuit, Deep Space) — only the
+  environment re-themes, bot/HUD/bolt colors stay put for readability
 
 **Controls (desktop)**
 
@@ -92,6 +94,8 @@ No internet connection is required — Three.js is bundled locally in
   автоматически появляются джойстик, драг-обзор и кнопки огня/паузы
 - Опциональные аптечки на арене и тряска камеры при получении урона —
   оба переключаются на стартовом экране
+- 3 скина арены на выбор (Neon Grid, Circuit, Deep Space) — переоформляется
+  только окружение, цвета бота/HUD/выстрелов не меняются ради читаемости
 
 **Управление (десктоп)**
 
