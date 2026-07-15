@@ -125,6 +125,7 @@ html, body {
 
 @media (pointer: coarse) {
   .controls-list.desktop-only { display: none; }
+  .desktop-only:not(.controls-list) { display: none; }
   .touch-only.controls-list { display: inline-block; }
   .touch-only:not(.controls-list) { display: block; }
 
@@ -371,7 +372,8 @@ html, body {
 
 .count-btn,
 .theme-btn,
-.difficulty-btn {
+.difficulty-btn,
+.controls-btn {
   padding: 0;
   font-size: 16px;
   letter-spacing: 0;
@@ -388,7 +390,8 @@ html, body {
 }
 
 .theme-btn,
-.difficulty-btn {
+.difficulty-btn,
+.controls-btn {
   height: 40px;
   padding: 0 14px;
   font-size: 12px;
@@ -398,14 +401,16 @@ html, body {
 
 .count-btn:hover,
 .theme-btn:hover,
-.difficulty-btn:hover {
+.difficulty-btn:hover,
+.controls-btn:hover {
   border-color: rgba(0, 255, 255, 0.8);
   filter: none;
 }
 
 .count-btn.selected,
 .theme-btn.selected,
-.difficulty-btn.selected {
+.difficulty-btn.selected,
+.controls-btn.selected {
   color: #04121a;
   background: linear-gradient(90deg, #00e5ff, #00ff9d);
   border-color: transparent;

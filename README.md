@@ -34,6 +34,7 @@ no server-side code, running entirely in the browser.
 - 5 bot difficulty levels (Rookie → Nightmare, default: Nightmare) —
   each tier moves faster, engages from farther away, fires more often,
   and aims more accurately than the last
+- Selectable control scheme on desktop — Arrow keys (default) or WASD
 - Optional custom bot faces — drop your own circular PNGs into
   `assets/faces/` (see the README there) and they're shuffled onto bots
   with no repeats; none supplied, and bots keep the default visor.
@@ -41,10 +42,10 @@ no server-side code, running entirely in the browser.
 
 **Controls (desktop)**
 
-| Key             | Action              |
-|-----------------|---------------------|
-| ↑ / ↓           | Move forward / back |
-| ← / →           | Strafe left / right |
+| Key                | Action              |
+|--------------------|---------------------|
+| ↑ / ↓ (or W / S)   | Move forward / back |
+| ← / → (or A / D)   | Strafe left / right |
 | Mouse           | Look around          |
 | Space / LMB     | Fire                |
 | Escape          | Pause / resume       |
@@ -110,6 +111,7 @@ No internet connection is required — Three.js is bundled locally in
 - 5 уровней сложности ботов (от Rookie до Nightmare, по умолчанию —
   Nightmare) — с каждым уровнем боты быстрее двигаются, вступают в бой
   с большей дистанции, чаще стреляют и точнее целятся
+- Выбор схемы управления на десктопе — стрелки (по умолчанию) или WASD
 - Опционально свои лица ботов — положи круглые PNG в `assets/faces/`
   (детали в README внутри папки), они случайно раздаются ботам без
   повторов; если файлов нет — обычный визор по умолчанию. Переключается
@@ -117,10 +119,10 @@ No internet connection is required — Three.js is bundled locally in
 
 **Управление (десктоп)**
 
-| Клавиша         | Действие                |
-|-----------------|--------------------------|
-| ↑ / ↓           | Движение вперёд / назад |
-| ← / →           | Стрейф влево / вправо   |
+| Клавиша              | Действие                |
+|-----------------------|--------------------------|
+| ↑ / ↓ (или W / S)     | Движение вперёд / назад |
+| ← / → (или A / D)     | Стрейф влево / вправо   |
 | Мышь            | Обзор                    |
 | Space / ЛКМ     | Стрельба                 |
 | Escape          | Пауза / продолжить       |

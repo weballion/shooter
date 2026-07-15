@@ -44,8 +44,8 @@
     <h1>NEON ARENA</h1>
     <p>Fight computer-controlled sentries to the death in the arena.</p>
     <ul class="controls-list desktop-only">
-      <li><span class="key">&uarr; &darr;</span> Move forward / backward</li>
-      <li><span class="key">&larr; &rarr;</span> Strafe left / right</li>
+      <li><span class="key" id="key-move-fb">&uarr; &darr;</span> Move forward / backward</li>
+      <li><span class="key" id="key-move-lr">&larr; &rarr;</span> Strafe left / right</li>
       <li><span class="key">MOUSE</span> Look around</li>
       <li><span class="key">SPACE / LMB</span> Fire</li>
       <li><span class="key">ESC</span> Pause</li>
@@ -74,6 +74,14 @@
         <button class="difficulty-btn" data-difficulty="veteran">VETERAN</button>
         <button class="difficulty-btn" data-difficulty="elite">ELITE</button>
         <button class="difficulty-btn selected" data-difficulty="nightmare">NIGHTMARE</button>
+      </div>
+    </div>
+
+    <div class="theme-selector desktop-only">
+      <span class="theme-label">CONTROLS</span>
+      <div class="theme-buttons">
+        <button class="controls-btn selected" data-controls="arrows">ARROWS</button>
+        <button class="controls-btn" data-controls="wasd">WASD</button>
       </div>
     </div>
 

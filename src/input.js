@@ -11,6 +11,7 @@ export class InputManager {
     this.pointerLocked = false;
     this.mouseDown = false;
     this.isTouch = window.matchMedia('(pointer: coarse)').matches;
+    this.controlScheme = 'arrows'; // 'arrows' | 'wasd'
 
     this._touch = { forward: false, backward: false, left: false, right: false };
     this._touchFireIds = new Set();
@@ -144,20 +145,28 @@ export class InputManager {
     this.domElement.requestPointerLock();
   }
 
+  setControlScheme(scheme) {
+    this.controlScheme = scheme;
+  }
+
   get moveForward() {
-    return this.keys.has('ArrowUp') || this._touch.forward;
+    const key = this.controlScheme === 'wasd' ? 'KeyW' : 'ArrowUp';
+    return this.keys.has(key) || this._touch.forward;
   }
 
   get moveBackward() {
-    return this.keys.has('ArrowDown') || this._touch.backward;
+    const key = this.controlScheme === 'wasd' ? 'KeyS' : 'ArrowDown';
+    return this.keys.has(key) || this._touch.backward;
   }
 
   get strafeLeft() {
-    return this.keys.has('ArrowLeft') || this._touch.left;
+    const key = this.controlScheme === 'wasd' ? 'KeyA' : 'ArrowLeft';
+    return this.keys.has(key) || this._touch.left;
   }
 
   get strafeRight() {
-    return this.keys.has('ArrowRight') || this._touch.right;
+    const key = this.controlScheme === 'wasd' ? 'KeyD' : 'ArrowRight';
+    return this.keys.has(key) || this._touch.right;
   }
 
   get firing() {

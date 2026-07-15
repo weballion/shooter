@@ -2,6 +2,7 @@ import { DEFAULT_ARENA_THEME } from './themes.js';
 import { DEFAULT_DIFFICULTY, getDifficulty } from './difficulty.js';
 
 const DEFAULT_ENEMY_COUNT = 1;
+const DEFAULT_CONTROL_SCHEME = 'arrows';
 
 export class HUD {
   constructor() {
@@ -70,6 +71,18 @@ export class HUD {
       });
     });
     this._refreshDifficultyButtons();
+
+    this.controlScheme = DEFAULT_CONTROL_SCHEME;
+    this.controlsButtonEls = document.querySelectorAll('.controls-btn');
+    this.keyMoveFbEl = document.getElementById('key-move-fb');
+    this.keyMoveLrEl = document.getElementById('key-move-lr');
+    this.controlsButtonEls.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.controlScheme = btn.dataset.controls;
+        this._refreshControlsButtons();
+      });
+    });
+    this._refreshControlsButtons();
   }
 
   _refreshCountButtons() {
@@ -93,6 +106,15 @@ export class HUD {
     });
   }
 
+  _refreshControlsButtons() {
+    this.controlsButtonEls.forEach((btn) => {
+      btn.classList.toggle('selected', btn.dataset.controls === this.controlScheme);
+    });
+    const wasd = this.controlScheme === 'wasd';
+    if (this.keyMoveFbEl) this.keyMoveFbEl.textContent = wasd ? 'W / S' : '↑ ↓';
+    if (this.keyMoveLrEl) this.keyMoveLrEl.textContent = wasd ? 'A / D' : '← →';
+  }
+
   getEnemyCount() {
     return this.enemyCount;
   }
@@ -103,6 +125,10 @@ export class HUD {
 
   getDifficulty() {
     return this.difficulty;
+  }
+
+  getControlScheme() {
+    return this.controlScheme;
   }
 
   getCarryHealth() {

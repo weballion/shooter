@@ -100,6 +100,7 @@ function beginRound(enemyCount, fullReset) {
 
   facesEnabled = hud.getCustomFacesEnabled();
   botDifficulty = hud.getDifficulty();
+  input.setControlScheme(hud.getControlScheme());
   spawnBots(enemyCount);
   hud.setupEnemyHealthBars(bots.length);
   hud.updateHealth(player.health, bots.map((b) => b.health));
