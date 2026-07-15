@@ -1,3 +1,15 @@
+// A simple 4-chord retro loop (Am - F - C - G), each chord arpeggiated
+// root/third/fifth/octave over 4 steps — the classic 8-bit game-music shape.
+const MUSIC_PROGRESSION = [
+  { bass: 110.0, lead: [220.0, 261.63, 329.63, 440.0] }, // Am
+  { bass: 87.31, lead: [174.61, 220.0, 261.63, 349.23] }, // F
+  { bass: 130.81, lead: [261.63, 329.63, 392.0, 523.25] }, // C
+  { bass: 98.0, lead: [196.0, 246.94, 293.66, 392.0] }, // G
+];
+const MUSIC_STEP_DURATION = 0.16; // seconds per 16th-note step
+const MUSIC_SCHEDULE_AHEAD = 0.1; // how far ahead (seconds) we schedule notes
+const MUSIC_POLL_INTERVAL = 50; // ms between scheduler wake-ups
+
 /**
  * All-synthesized sound effects (Web Audio oscillators/noise) so the game
  * stays a self-contained static site with no external audio assets to host.
@@ -8,6 +20,11 @@
 export class SoundManager {
   constructor() {
     this.ctx = null;
+    this.musicPlaying = false;
+    this.musicGain = null;
+    this._musicStep = 0;
+    this._musicNextTime = 0;
+    this._musicTimeoutId = null;
   }
 
   _context() {
@@ -89,5 +106,64 @@ export class SoundManager {
     [400, 340, 260, 180].forEach((freq, i) =>
       this._tone({ freqStart: freq, freqEnd: freq * 0.9, duration: 0.25, type: 'sawtooth', volume: 0.2, delay: i * 0.16 })
     );
+  }
+
+  /** Looping chiptune-style background music. No-op if already playing. */
+  startMusic() {
+    if (this.musicPlaying) return;
+    const ctx = this._context();
+    this.musicPlaying = true;
+    this.musicGain = ctx.createGain();
+    this.musicGain.gain.value = 1;
+    this.musicGain.connect(ctx.destination);
+    this._musicStep = 0;
+    this._musicNextTime = ctx.currentTime + 0.05;
+    this._scheduleMusic();
+  }
+
+  stopMusic() {
+    this.musicPlaying = false;
+    clearTimeout(this._musicTimeoutId);
+    if (this.musicGain) {
+      this.musicGain.disconnect();
+      this.musicGain = null;
+    }
+  }
+
+  _scheduleMusic() {
+    if (!this.musicPlaying) return;
+    const ctx = this._context();
+
+    while (this._musicNextTime < ctx.currentTime + MUSIC_SCHEDULE_AHEAD) {
+      const chord = MUSIC_PROGRESSION[Math.floor(this._musicStep / 4) % MUSIC_PROGRESSION.length];
+      const noteIndex = this._musicStep % 4;
+
+      if (noteIndex === 0) {
+        this._musicNote(chord.bass, MUSIC_STEP_DURATION * 3.8, 'square', 0.05, this._musicNextTime);
+      }
+      this._musicNote(chord.lead[noteIndex], MUSIC_STEP_DURATION * 0.85, 'square', 0.055, this._musicNextTime);
+
+      this._musicNextTime += MUSIC_STEP_DURATION;
+      this._musicStep++;
+    }
+
+    this._musicTimeoutId = setTimeout(() => this._scheduleMusic(), MUSIC_POLL_INTERVAL);
+  }
+
+  _musicNote(freq, duration, type, volume, startTime) {
+    const ctx = this._context();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+    osc.connect(gain).connect(this.musicGain);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.02);
   }
 }

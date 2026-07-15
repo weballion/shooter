@@ -9,8 +9,10 @@ deliberate, not oversights.
 - **Three.js is vendored, not CDN-loaded.** `vendor/three/three.module.js` is
   a self-contained build copied in on purpose so the game runs with no
   internet connection. Don't point the importmap back at unpkg/CDN.
-- **Audio is 100% synthesized** (`src/audio.js`, Web Audio oscillators/noise).
-  No external audio files — keep it that way rather than adding assets.
+- **Audio is 100% synthesized** (`src/audio.js`, Web Audio oscillators/noise),
+  including the looping background music (a 4-chord chiptune arpeggio
+  scheduled via `startMusic()`/`stopMusic()`). No external audio files —
+  keep it that way rather than adding assets.
 - **Bot faces are the one deliberate exception to "no external assets" —
   and they're gitignored on purpose, never commit them.**
   `assets/faces/face1.png` .. `face10.png` (any subset, user-supplied) get

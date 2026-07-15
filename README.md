@@ -23,6 +23,8 @@ no server-side code, running entirely in the browser.
 - A small in-game readout in the top-left corner showing the active mode,
   enemy count (or round, in Survival), and difficulty
 - Synthesized sound effects (no external audio files)
+- Looping 8-bit style background music, synthesized the same way — toggleable
+  on the start screen ("Retro music", default on)
 - Pause menu (Escape), with a mid-run exit back to normal mode during
   Survival
 - Playable on phones/tablets — on-screen joystick, look-drag, and fire/pause
@@ -100,6 +102,8 @@ No internet connection is required — Three.js is bundled locally in
 - Небольшая надпись в левом верхнем углу во время игры — режим,
   количество врагов (или номер раунда в "На выживание") и сложность
 - Синтезированные звуковые эффекты (без внешних аудиофайлов)
+- Зацикленная 8-битная фоновая музыка, синтезируется так же — включается/
+  выключается на стартовом экране ("Retro music", по умолчанию включена)
 - Меню паузы (Escape), с возможностью выйти в обычный режим прямо
   посреди забега "на выживание"
 - Играбельно на телефоне/планшете — на сенсорных устройствах

@@ -112,6 +112,8 @@ function beginRound(enemyCount, fullReset) {
   hud.showHUD();
   if (!input.isTouch) input.requestPointerLock();
   sound.gameStart();
+  if (hud.getMusicEnabled()) sound.startMusic();
+  else sound.stopMusic();
   state = 'PLAYING';
 }
 
@@ -138,6 +140,7 @@ function exitToNormalMode() {
   bots.forEach((b) => scene.remove(b.mesh));
   bots = [];
   pickups.deactivate();
+  sound.stopMusic();
   if (document.pointerLockElement) document.exitPointerLock();
   hud.hideHUD();
   hud.hideEndScreen();
@@ -191,6 +194,7 @@ window.addEventListener('resize', () => {
 function handleNormalRoundEnd(playerWon) {
   state = 'ENDED';
   hud.hideHUD();
+  sound.stopMusic();
   if (document.pointerLockElement) document.exitPointerLock();
   hud.setEndScreenCountSelectorVisible(true);
   hud.showEndScreen(playerWon ? 'VICTORY' : 'DEFEAT', playerWon ? 'victory' : 'defeat', null);
@@ -202,6 +206,7 @@ function handleNormalRoundEnd(playerWon) {
 function handleSurvivalDefeat() {
   state = 'ENDED';
   hud.hideHUD();
+  sound.stopMusic();
   if (document.pointerLockElement) document.exitPointerLock();
   hud.setEndScreenCountSelectorVisible(false);
   hud.showEndScreen('DEFEAT', 'defeat', `Reached round ${survivalRound} of ${SURVIVAL_MAX_ROUND}`);
@@ -212,6 +217,7 @@ function handleSurvivalDefeat() {
 function handleSurvivalComplete() {
   state = 'ENDED';
   hud.hideHUD();
+  sound.stopMusic();
   if (document.pointerLockElement) document.exitPointerLock();
   hud.setEndScreenCountSelectorVisible(false);
   hud.showEndScreen('SURVIVED!', 'victory', `All ${SURVIVAL_MAX_ROUND} rounds cleared`);
