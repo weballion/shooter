@@ -25,6 +25,7 @@ export class Player {
     this._forward = new THREE.Vector3();
     this._right = new THREE.Vector3();
     this.shakeEnabled = true;
+    this.invertY = false;
     this._shakeTime = 0;
 
     this._syncCamera();
@@ -75,7 +76,7 @@ export class Player {
   update(delta, input, arena, bots) {
     const look = input.consumeLookDelta();
     this.yaw -= look.x * MOUSE_SENSITIVITY;
-    this.pitch -= look.y * MOUSE_SENSITIVITY;
+    this.pitch -= look.y * MOUSE_SENSITIVITY * (this.invertY ? -1 : 1);
     const maxPitch = Math.PI / 2 - 0.05;
     this.pitch = Math.max(-maxPitch, Math.min(maxPitch, this.pitch));
 

@@ -93,6 +93,7 @@ function beginRound(enemyCount, fullReset) {
   if (fullReset) player.reset();
   else player.resetPosition();
   player.shakeEnabled = hud.getCameraShakeEnabled();
+  player.invertY = hud.getInvertY();
 
   pickupsEnabled = hud.getPickupsEnabled();
   if (pickupsEnabled) pickups.activate();

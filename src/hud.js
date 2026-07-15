@@ -22,6 +22,7 @@ export class HUD {
     this.cameraShakeCheckboxEl = document.getElementById('camera-shake-checkbox');
     this.customFacesCheckboxEl = document.getElementById('custom-faces-checkbox');
     this.musicCheckboxEl = document.getElementById('music-checkbox');
+    this.invertYCheckboxEl = document.getElementById('invert-y-checkbox');
 
     this.endScreenEl = document.getElementById('end-screen');
     this.endTitleEl = document.getElementById('end-title');
@@ -150,6 +151,10 @@ export class HUD {
 
   getMusicEnabled() {
     return this.musicCheckboxEl.checked;
+  }
+
+  getInvertY() {
+    return this.invertYCheckboxEl.checked;
   }
 
   /** (Re)builds one health-bar row per bot, in arena/spawn order. */

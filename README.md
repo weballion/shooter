@@ -37,6 +37,7 @@ no server-side code, running entirely in the browser.
   each tier moves faster, engages from farther away, fires more often,
   and aims more accurately than the last
 - Selectable control scheme on desktop — Arrow keys (default) or WASD
+- Optional vertical look inversion ("Invert look Y", off by default)
 - Optional custom bot faces — drop your own circular PNGs into
   `assets/faces/` (see the README there) and they're shuffled onto bots
   with no repeats; none supplied, and bots keep the default visor.
@@ -116,6 +117,7 @@ No internet connection is required — Three.js is bundled locally in
   Nightmare) — с каждым уровнем боты быстрее двигаются, вступают в бой
   с большей дистанции, чаще стреляют и точнее целятся
 - Выбор схемы управления на десктопе — стрелки (по умолчанию) или WASD
+- Опциональная инверсия обзора по вертикали ("Invert look Y", по умолчанию выключена)
 - Опционально свои лица ботов — положи круглые PNG в `assets/faces/`
   (детали в README внутри папки), они случайно раздаются ботам без
   повторов; если файлов нет — обычный визор по умолчанию. Переключается
