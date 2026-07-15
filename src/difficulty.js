@@ -6,7 +6,7 @@
 export const DIFFICULTY_LEVELS = [
   {
     key: 'rookie',
-    label: 'ROOKIE',
+    label: '1 ROOKIE',
     moveSpeed: 4,
     engageRange: 10,
     comfortDistance: 10,
@@ -16,7 +16,7 @@ export const DIFFICULTY_LEVELS = [
   },
   {
     key: 'regular',
-    label: 'REGULAR',
+    label: '2 REGULAR',
     moveSpeed: 4.5,
     engageRange: 12,
     comfortDistance: 9,
@@ -26,7 +26,7 @@ export const DIFFICULTY_LEVELS = [
   },
   {
     key: 'veteran',
-    label: 'VETERAN',
+    label: '3 VETERAN',
     moveSpeed: 5,
     engageRange: 14,
     comfortDistance: 8,
@@ -36,7 +36,7 @@ export const DIFFICULTY_LEVELS = [
   },
   {
     key: 'elite',
-    label: 'ELITE',
+    label: '4 ELITE',
     moveSpeed: 5.5,
     engageRange: 16,
     comfortDistance: 7,
@@ -46,7 +46,7 @@ export const DIFFICULTY_LEVELS = [
   },
   {
     key: 'nightmare',
-    label: 'NIGHTMARE',
+    label: '5 NIGHTMARE',
     moveSpeed: 6,
     engageRange: 18,
     comfortDistance: 6,
