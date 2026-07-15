@@ -103,6 +103,7 @@ function beginRound(enemyCount, fullReset) {
   spawnBots(enemyCount);
   hud.setupEnemyHealthBars(bots.length);
   hud.updateHealth(player.health, bots.map((b) => b.health));
+  hud.setRunInfo({ mode, enemyCount, round: survivalRound, maxRound: SURVIVAL_MAX_ROUND });
   hud.hideStartScreen();
   hud.hideEndScreen();
   hud.hidePauseScreen();

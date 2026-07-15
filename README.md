@@ -20,6 +20,8 @@ no server-side code, running entirely in the browser.
 - **Survival mode**: 4 rounds, +1 enemy each round, optional health
   carry-over between rounds — die and you're back to round 1
 - Health bars, tracer-bolt shot visualization, floating damage numbers
+- A small in-game readout in the top-left corner showing the active mode,
+  enemy count (or round, in Survival), and difficulty
 - Synthesized sound effects (no external audio files)
 - Pause menu (Escape), with a mid-run exit back to normal mode during
   Survival
@@ -94,6 +96,8 @@ No internet connection is required — Three.js is bundled locally in
   заново — при смерти забег начинается с раунда 1
 - Полоски здоровья, визуализация выстрелов (трассеры), всплывающие
   цифры урона
+- Небольшая надпись в левом верхнем углу во время игры — режим,
+  количество врагов (или номер раунда в "На выживание") и сложность
 - Синтезированные звуковые эффекты (без внешних аудиофайлов)
 - Меню паузы (Escape), с возможностью выйти в обычный режим прямо
   посреди забега "на выживание"

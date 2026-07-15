@@ -1,11 +1,12 @@
 import { DEFAULT_ARENA_THEME } from './themes.js';
-import { DEFAULT_DIFFICULTY } from './difficulty.js';
+import { DEFAULT_DIFFICULTY, getDifficulty } from './difficulty.js';
 
 const DEFAULT_ENEMY_COUNT = 1;
 
 export class HUD {
   constructor() {
     this.hudEl = document.getElementById('hud');
+    this.runInfoEl = document.getElementById('run-info');
     this.crosshairEl = document.getElementById('crosshair');
     this.hitMarkerEl = document.getElementById('hit-marker');
     this.playerFillEl = document.getElementById('player-health-fill');
@@ -179,6 +180,15 @@ export class HUD {
 
   showHUD() {
     this.hudEl.classList.remove('hidden');
+  }
+
+  /** Small always-visible reminder of the current run's mode/round/difficulty. */
+  setRunInfo({ mode, enemyCount, round, maxRound }) {
+    const diffLabel = getDifficulty(this.difficulty).label;
+    this.runInfoEl.textContent =
+      mode === 'SURVIVAL'
+        ? `SURVIVAL · ROUND ${round}/${maxRound} · ${diffLabel}`
+        : `NORMAL · ${enemyCount} ${enemyCount === 1 ? 'ENEMY' : 'ENEMIES'} · ${diffLabel}`;
   }
 
   hideHUD() {
