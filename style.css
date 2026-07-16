@@ -373,7 +373,8 @@ html, body {
 .count-btn,
 .theme-btn,
 .difficulty-btn,
-.controls-btn {
+.controls-btn,
+.appearance-btn {
   padding: 0;
   font-size: 16px;
   letter-spacing: 0;
@@ -391,7 +392,8 @@ html, body {
 
 .theme-btn,
 .difficulty-btn,
-.controls-btn {
+.controls-btn,
+.appearance-btn {
   height: 40px;
   padding: 0 14px;
   font-size: 12px;
@@ -402,7 +404,8 @@ html, body {
 .count-btn:hover,
 .theme-btn:hover,
 .difficulty-btn:hover,
-.controls-btn:hover {
+.controls-btn:hover,
+.appearance-btn:hover {
   border-color: rgba(0, 255, 255, 0.8);
   filter: none;
 }
@@ -410,7 +413,8 @@ html, body {
 .count-btn.selected,
 .theme-btn.selected,
 .difficulty-btn.selected,
-.controls-btn.selected {
+.controls-btn.selected,
+.appearance-btn.selected {
   color: #04121a;
   background: linear-gradient(90deg, #00e5ff, #00ff9d);
   border-color: transparent;
@@ -435,8 +439,8 @@ button:hover {
   filter: brightness(1.1);
 }
 
-.panel button + button,
-.panel button + .secondary-button {
+.panel > button + button,
+.panel > button + .secondary-button {
   margin-top: 14px;
 }
 

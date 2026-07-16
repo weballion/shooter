@@ -13,6 +13,17 @@ const MAX_RANGE = 70;
 const SHAKE_DURATION = 0.3;
 const SHAKE_MAGNITUDE = 0.05;
 
+/** Walks up from a raycast hit object to find which bot's `mesh` it belongs
+ * to — needed since a monster-model bot's `mesh` is a Group and the actual
+ * hit is one of its (possibly nested) child parts, not the group itself. */
+function findHitBot(object, aliveBots) {
+  for (let node = object; node; node = node.parent) {
+    const bot = aliveBots.find((b) => b.mesh === node);
+    if (bot) return bot;
+  }
+  return null;
+}
+
 export class Player {
   constructor() {
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 200);
@@ -142,8 +153,10 @@ export class Player {
 
     const aliveBots = (bots || []).filter((b) => b.isAlive);
     const targets = [...aliveBots.map((b) => b.mesh), ...arena.colliders];
-    const hits = this.raycaster.intersectObjects(targets, false);
-    const hitBot = hits.length > 0 ? aliveBots.find((b) => b.mesh === hits[0].object) || null : null;
+    // Recursive: a monster-model bot's `mesh` is a Group wrapping the actual
+    // (possibly multi-part) glTF model, not a raycastable object itself.
+    const hits = this.raycaster.intersectObjects(targets, true);
+    const hitBot = hits.length > 0 ? findHitBot(hits[0].object, aliveBots) : null;
     const impactPoint = hits.length > 0
       ? hits[0].point.clone()
       : origin.clone().add(direction.multiplyScalar(MAX_RANGE));

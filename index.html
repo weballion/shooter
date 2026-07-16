@@ -8,7 +8,9 @@
 <script type="importmap">
 {
   "imports": {
-    "three": "./vendor/three/three.module.js"
+    "three": "./vendor/three/three.module.js",
+    "three/addons/loaders/GLTFLoader.js": "./vendor/three/addons/loaders/GLTFLoader.js",
+    "three/addons/utils/SkeletonUtils.js": "./vendor/three/addons/utils/SkeletonUtils.js"
   }
 }
 </script>
@@ -85,6 +87,14 @@
       </div>
     </div>
 
+    <div class="theme-selector">
+      <span class="theme-label">BOT LOOKS</span>
+      <div class="theme-buttons">
+        <button class="appearance-btn selected" data-appearance="faces">FACES</button>
+        <button class="appearance-btn" data-appearance="monsters">MONSTERS</button>
+      </div>
+    </div>
+
     <div class="options-row">
       <label class="checkbox-toggle">
         <input type="checkbox" id="pickups-checkbox" checked />
@@ -93,10 +103,6 @@
       <label class="checkbox-toggle">
         <input type="checkbox" id="camera-shake-checkbox" checked />
         <span>Camera shake</span>
-      </label>
-      <label class="checkbox-toggle">
-        <input type="checkbox" id="custom-faces-checkbox" checked />
-        <span>Custom faces</span>
       </label>
       <label class="checkbox-toggle">
         <input type="checkbox" id="music-checkbox" checked />

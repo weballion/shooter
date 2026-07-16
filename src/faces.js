@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { pickRandom } from './shuffle.js';
 
 const FACE_DIR = './assets/faces/';
 const FACE_COUNT = 10;
@@ -31,19 +32,6 @@ export async function loadFaceTextures() {
   return results.filter(Boolean);
 }
 
-/** Shuffles `textures` and returns `count` of them; repeats only if count exceeds the pool. */
 export function pickRandomFaces(textures, count) {
-  if (textures.length === 0) return [];
-
-  const shuffled = [...textures];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-
-  const picked = [];
-  for (let i = 0; i < count; i++) {
-    picked.push(shuffled[i % shuffled.length]);
-  }
-  return picked;
+  return pickRandom(textures, count);
 }

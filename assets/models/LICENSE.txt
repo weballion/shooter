@@ -1,0 +1,14 @@
+Monster models — CC0 1.0 Universal (public domain)
+
+All models by Quaternius (https://quaternius.com), mirrored via Poly Pizza
+(https://poly.pizza) under a CC0 1.0 license
+(https://creativecommons.org/publicdomain/zero/1.0/). Free for any use,
+including commercial, no attribution required.
+
+  monster1.glb — "Robot Enemy"   https://poly.pizza/m/1gNo5ezvmr
+  monster2.glb — "Alien"         https://poly.pizza/m/HYUUkdugoP
+  monster3.glb — "Enemy Small"   https://poly.pizza/m/4LjT020LQh
+  monster4.glb — "Slime Enemy"   https://poly.pizza/m/eSLKTsbl7F
+
+Unlike assets/faces/ (gitignored, user-supplied photos), these files are
+committed to the repository.

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { moveWithCollision, isBlockedAt } from './collision.js';
 import { getDifficulty } from './difficulty.js';
 
@@ -12,6 +13,10 @@ export const SPAWN_POINTS = [
 
 export const RADIUS = 0.5;
 const BODY_HEIGHT = 1.3;
+// The bot root's fixed world-space Y, for both mesh variants — matches the
+// capsule's vertical center, which _eyePosition()/damage numbers/explosion
+// effects elsewhere already assume `position.y` to be.
+const GROUND_Y = BODY_HEIGHT / 2 + 0.45;
 const EYE_OFFSET = 1.6;
 const MAX_HEALTH = 100;
 const DAMAGE_PER_HIT = 20;
@@ -64,7 +69,48 @@ function buildFaceImage(texture) {
   return disc;
 }
 
-function buildMesh(spawnPosition, faceTexture) {
+function buildMesh(spawnPosition, faceTexture, monsterModel) {
+  if (monsterModel) {
+    const model = cloneSkeleton(monsterModel.scene);
+    // Rendered at native scale (see monsterModels.js) — the model's own
+    // origin is assumed to be at its feet, the standard convention for
+    // rigged game-ready characters like these.
+    // Skinned meshes keep their bind-pose bounding sphere for frustum
+    // culling, which goes stale as soon as the animation moves bones away
+    // from that pose — left on, three.js intermittently culls an
+    // in-view animated bot as if it were off-screen.
+    model.traverse((child) => {
+      if (child.isMesh) child.frustumCulled = false;
+    });
+    // The group root sits at GROUND_Y (like the capsule's center) so
+    // eye height/damage numbers/explosion effects elsewhere keep working
+    // unmodified; shift the model down within the group so its feet land
+    // on the floor.
+    model.position.y = -GROUND_Y;
+
+    const mesh = new THREE.Group();
+    mesh.add(model);
+    mesh.position.copy(spawnPosition);
+    mesh.position.y = GROUND_Y;
+
+    // Invisible hitbox for the player's raycast to hit, sized like the
+    // original capsule. A SkinnedMesh's raycast intersection is gated by
+    // its bind-pose geometry.boundingSphere — tiny for these rigs (real
+    // shape only exists post-skinning, which that sphere ignores) — so
+    // the visible, correctly-sized model is effectively untouchable by
+    // raycasting on its own. Object3D.visible = false still participates
+    // in raycasting in three.js, so this stays invisible on screen.
+    const hitbox = new THREE.Mesh(new THREE.CapsuleGeometry(RADIUS, BODY_HEIGHT, 4, 8), new THREE.MeshBasicMaterial());
+    hitbox.visible = false;
+    mesh.add(hitbox);
+
+    const glow = new THREE.PointLight(0xff2ec4, 0.8, 6);
+    glow.position.set(0, 0.6, 0);
+    mesh.add(glow);
+
+    return mesh;
+  }
+
   const geometry = new THREE.CapsuleGeometry(0.45, BODY_HEIGHT, 4, 8);
   const material = new THREE.MeshStandardMaterial({
     color: 0x220a2a,
@@ -74,7 +120,7 @@ function buildMesh(spawnPosition, faceTexture) {
   });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.copy(spawnPosition);
-  mesh.position.y = BODY_HEIGHT / 2 + 0.45;
+  mesh.position.y = GROUND_Y;
   mesh.add(faceTexture ? buildFaceImage(faceTexture) : buildFace());
 
   const glow = new THREE.PointLight(0xff2ec4, 0.8, 6);
@@ -82,6 +128,33 @@ function buildMesh(spawnPosition, faceTexture) {
   mesh.add(glow);
 
   return mesh;
+}
+
+const IDLE_KEYWORDS = ['idle'];
+const WALK_KEYWORDS = ['walk', 'run', 'flying'];
+const ATTACK_KEYWORDS = ['attack', 'shoot', 'punch', 'bite', 'slash', 'headbutt'];
+
+function findClip(clips, keywords) {
+  return clips.find((clip) => keywords.some((kw) => clip.name.toLowerCase().includes(kw)));
+}
+
+/** Maps a model's arbitrary clip names onto idle/walk/attack roles by
+ * keyword, tolerating whatever naming scheme the source model used. Falls
+ * back to the first clip for idle, and to nothing (rather than a wrong
+ * clip) for walk/attack if no keyword match is found. */
+function resolveActions(mixer, clips) {
+  const idleClip = findClip(clips, IDLE_KEYWORDS) || clips[0];
+  const walkClip = findClip(clips, WALK_KEYWORDS);
+  const attackClip = findClip(clips, ATTACK_KEYWORDS);
+
+  const idle = idleClip ? mixer.clipAction(idleClip) : null;
+  const walk = walkClip ? mixer.clipAction(walkClip) : null;
+  const attack = attackClip ? mixer.clipAction(attackClip) : null;
+  if (attack) {
+    attack.setLoop(THREE.LoopOnce);
+    attack.clampWhenFinished = true;
+  }
+  return { idle, walk, attack };
 }
 
 /** Steers a desired movement direction around obstacles directly ahead. */
@@ -103,8 +176,8 @@ function steerAround(position, dir, colliders) {
 }
 
 export class Bot {
-  constructor(scene, spawnPosition, faceTexture, difficultyKey) {
-    this.mesh = buildMesh(spawnPosition, faceTexture);
+  constructor(scene, spawnPosition, faceTexture, difficultyKey, monsterModel) {
+    this.mesh = buildMesh(spawnPosition, faceTexture, monsterModel);
     scene.add(this.mesh);
     this.difficulty = getDifficulty(difficultyKey);
     this.health = MAX_HEALTH;
@@ -113,6 +186,32 @@ export class Bot {
     this.strafeTimer = 0;
     this.fireTimer = 0;
     this.raycaster = new THREE.Raycaster();
+
+    this.mixer = null;
+    this.actions = null;
+    this._currentLoopAction = null;
+    this._attacking = false;
+    if (monsterModel) {
+      this.mixer = new THREE.AnimationMixer(this.mesh);
+      this.actions = resolveActions(this.mixer, monsterModel.animations);
+      this._currentLoopAction = this.actions.idle;
+      this._currentLoopAction?.play();
+      this.mixer.addEventListener('finished', (e) => {
+        if (e.action !== this.actions.attack) return;
+        this._attacking = false;
+        this._currentLoopAction?.reset().fadeIn(0.2).play();
+      });
+    }
+  }
+
+  /** Crossfades the looping idle/walk action; a no-op mid-attack so the
+   * attack pose isn't interrupted by ongoing strafe/chase movement. */
+  _setLoopAction(action) {
+    if (!action || this._attacking || this._currentLoopAction === action) return;
+    const prev = this._currentLoopAction;
+    this._currentLoopAction = action;
+    action.reset().fadeIn(0.2).play();
+    prev?.fadeOut(0.2);
   }
 
   get isAlive() {
@@ -144,6 +243,8 @@ export class Bot {
 
   update(delta, player, arena) {
     if (!this.isAlive) return null;
+
+    this.mixer?.update(delta);
 
     if (this.fireTimer > 0) this.fireTimer -= delta;
 
@@ -182,9 +283,16 @@ export class Bot {
       moveDir = steerAround(this.position, dirToPlayer, arena.colliders);
     }
 
+    const beforeX = this.position.x;
+    const beforeZ = this.position.z;
     const step = this.difficulty.moveSpeed * delta;
     moveWithCollision(this.position, moveDir.x * step, moveDir.z * step, RADIUS, arena.colliders, arena.halfSize);
-    this.mesh.position.y = BODY_HEIGHT / 2 + 0.45;
+    this.mesh.position.y = GROUND_Y;
+
+    if (this.mixer) {
+      const moved = Math.hypot(this.position.x - beforeX, this.position.z - beforeZ) > 1e-4;
+      this._setLoopAction(moved && this.actions.walk ? this.actions.walk : this.actions.idle);
+    }
 
     let shot = null;
     if (this.state === 'ENGAGE' && this.fireTimer <= 0) {
@@ -201,6 +309,12 @@ export class Bot {
    * visual bolt arrives. Misses aim near, not at, the player.
    */
   _fireAt(player, distance) {
+    if (this.actions?.attack) {
+      this._attacking = true;
+      this.actions.attack.reset().fadeIn(0.1).play();
+      this._currentLoopAction?.fadeOut(0.1);
+    }
+
     const { accuracyBase, accuracyFloor, engageRange } = this.difficulty;
     const accuracy = Math.max(accuracyFloor, accuracyBase - distance / (engageRange * 1.5));
     const hit = Math.random() < accuracy;

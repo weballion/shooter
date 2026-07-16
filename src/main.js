@@ -11,6 +11,7 @@ import { SoundManager } from './audio.js';
 import { Pickups } from './pickups.js';
 import { DEFAULT_ARENA_THEME } from './themes.js';
 import { loadFaceTextures, pickRandomFaces } from './faces.js';
+import { loadMonsterModels, pickRandomMonsterModels } from './monsterModels.js';
 import { DEFAULT_DIFFICULTY } from './difficulty.js';
 
 const PLAYER_BOLT_COLOR = 0x00e5ff;
@@ -71,16 +72,28 @@ let survivalRound = 1;
 let carryHealth = true;
 let pickupsEnabled = true;
 let facesEnabled = true;
+let monsterModelsEnabled = false;
 let botDifficulty = DEFAULT_DIFFICULTY;
 let faceTextures = [];
 loadFaceTextures().then((textures) => {
   faceTextures = textures; // any round already in progress keeps its bots as-is
 });
+let monsterModels = [];
+loadMonsterModels().then((models) => {
+  monsterModels = models; // any round already in progress keeps its bots as-is
+});
 
 function spawnBots(count) {
   bots.forEach((b) => scene.remove(b.mesh));
-  const faces = facesEnabled ? pickRandomFaces(faceTextures, count) : [];
-  bots = SPAWN_POINTS.slice(0, count).map((point, i) => new Bot(scene, point, faces[i], botDifficulty));
+  if (monsterModelsEnabled) {
+    const models = pickRandomMonsterModels(monsterModels, count);
+    bots = SPAWN_POINTS.slice(0, count).map(
+      (point, i) => new Bot(scene, point, null, botDifficulty, models[i])
+    );
+  } else {
+    const faces = facesEnabled ? pickRandomFaces(faceTextures, count) : [];
+    bots = SPAWN_POINTS.slice(0, count).map((point, i) => new Bot(scene, point, faces[i], botDifficulty));
+  }
 }
 
 function applyArenaTheme(themeKey) {
@@ -104,6 +117,7 @@ function beginRound(enemyCount, fullReset) {
   else pickups.deactivate();
 
   facesEnabled = hud.getCustomFacesEnabled();
+  monsterModelsEnabled = hud.getMonsterModelsEnabled() && monsterModels.length > 0;
   botDifficulty = hud.getDifficulty();
   input.setControlScheme(hud.getControlScheme());
   spawnBots(enemyCount);

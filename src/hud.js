@@ -3,6 +3,7 @@ import { DEFAULT_DIFFICULTY, getDifficulty } from './difficulty.js';
 
 const DEFAULT_ENEMY_COUNT = 1;
 const DEFAULT_CONTROL_SCHEME = 'arrows';
+const DEFAULT_APPEARANCE = 'faces';
 
 export class HUD {
   constructor() {
@@ -20,7 +21,6 @@ export class HUD {
     this.carryHealthCheckboxEl = document.getElementById('carry-health-checkbox');
     this.pickupsCheckboxEl = document.getElementById('pickups-checkbox');
     this.cameraShakeCheckboxEl = document.getElementById('camera-shake-checkbox');
-    this.customFacesCheckboxEl = document.getElementById('custom-faces-checkbox');
     this.musicCheckboxEl = document.getElementById('music-checkbox');
     this.invertYCheckboxEl = document.getElementById('invert-y-checkbox');
 
@@ -85,6 +85,18 @@ export class HUD {
       });
     });
     this._refreshControlsButtons();
+
+    // Bot appearance: custom face photos and monster models are mutually
+    // exclusive, so this is one radio-style pair rather than two checkboxes.
+    this.appearance = DEFAULT_APPEARANCE;
+    this.appearanceButtonEls = document.querySelectorAll('.appearance-btn');
+    this.appearanceButtonEls.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.appearance = btn.dataset.appearance;
+        this._refreshAppearanceButtons();
+      });
+    });
+    this._refreshAppearanceButtons();
   }
 
   _refreshCountButtons() {
@@ -117,6 +129,12 @@ export class HUD {
     if (this.keyMoveLrEl) this.keyMoveLrEl.textContent = wasd ? 'A / D' : '← →';
   }
 
+  _refreshAppearanceButtons() {
+    this.appearanceButtonEls.forEach((btn) => {
+      btn.classList.toggle('selected', btn.dataset.appearance === this.appearance);
+    });
+  }
+
   getEnemyCount() {
     return this.enemyCount;
   }
@@ -146,7 +164,11 @@ export class HUD {
   }
 
   getCustomFacesEnabled() {
-    return this.customFacesCheckboxEl.checked;
+    return this.appearance === 'faces';
+  }
+
+  getMonsterModelsEnabled() {
+    return this.appearance === 'monsters';
   }
 
   getMusicEnabled() {
