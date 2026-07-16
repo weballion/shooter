@@ -3,6 +3,7 @@ import { createArena } from './arena.js';
 import { Player } from './player.js';
 import { Bot, SPAWN_POINTS, RADIUS as BOT_RADIUS } from './bot.js';
 import { InputManager } from './input.js';
+import { moveWithCollision } from './collision.js';
 import { HUD } from './hud.js';
 import { Effects } from './effects.js';
 import { DamageNumbers } from './damageNumbers.js';
@@ -16,8 +17,13 @@ const PLAYER_BOLT_COLOR = 0x00e5ff;
 const BOT_BOLT_COLOR = 0xff2ec4;
 const SURVIVAL_MAX_ROUND = SPAWN_POINTS.length;
 
-/** Keeps bots from overlapping each other by pushing apart any pair that's too close. */
-function separateBots(bots) {
+/**
+ * Keeps bots from overlapping each other by pushing apart any pair that's
+ * too close. Routes the push through moveWithCollision (rather than setting
+ * position.x/z directly) so a bot being shoved aside can't be separated
+ * straight into a wall or pillar and end up stuck inside it.
+ */
+function separateBots(bots, arena) {
   for (let i = 0; i < bots.length; i++) {
     for (let j = i + 1; j < bots.length; j++) {
       const a = bots[i];
@@ -32,10 +38,8 @@ function separateBots(bots) {
         const push = (minDist - dist) / 2;
         const nx = dx / dist;
         const nz = dz / dist;
-        a.position.x -= nx * push;
-        a.position.z -= nz * push;
-        b.position.x += nx * push;
-        b.position.z += nz * push;
+        moveWithCollision(a.position, -nx * push, -nz * push, BOT_RADIUS, arena.colliders, arena.halfSize);
+        moveWithCollision(b.position, nx * push, nz * push, BOT_RADIUS, arena.colliders, arena.halfSize);
       }
     }
   }
@@ -280,7 +284,7 @@ renderer.setAnimationLoop(() => {
         });
       }
     }
-    separateBots(bots);
+    separateBots(bots, arena);
 
     if (pickupsEnabled) {
       const healed = pickups.update(delta, player);
