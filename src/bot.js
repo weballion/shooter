@@ -72,6 +72,7 @@ function buildFaceImage(texture) {
 function buildMesh(spawnPosition, faceTexture, monsterModel) {
   if (monsterModel) {
     const model = cloneSkeleton(monsterModel.scene);
+    const accent = new THREE.Color(monsterModel.accentColor);
     // Rendered at native scale (see monsterModels.js) — the model's own
     // origin is assumed to be at its feet, the standard convention for
     // rigged game-ready characters like these.
@@ -80,7 +81,20 @@ function buildMesh(spawnPosition, faceTexture, monsterModel) {
     // from that pose — left on, three.js intermittently culls an
     // in-view animated bot as if it were off-screen.
     model.traverse((child) => {
-      if (child.isMesh) child.frustumCulled = false;
+      if (!child.isMesh) return;
+      child.frustumCulled = false;
+      // These models ship with plain (non-emissive) materials, so under
+      // the arena's deliberately dim ambient/hemisphere lighting they read
+      // as near-black silhouettes. Self-illuminate proportionally to each
+      // material's own base color, blended toward this skin's signature
+      // accent color — keeps each model's own palette recognizable (robot
+      // green, slime green, etc.) while giving each monster "species" a
+      // distinct neon identity instead of one shared glow color.
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      materials.forEach((mat) => {
+        mat.emissive = mat.color.clone().lerp(accent, 0.35);
+        mat.emissiveIntensity = 0.6;
+      });
     });
     // The group root sits at GROUND_Y (like the capsule's center) so
     // eye height/damage numbers/explosion effects elsewhere keep working
@@ -104,7 +118,10 @@ function buildMesh(spawnPosition, faceTexture, monsterModel) {
     hitbox.visible = false;
     mesh.add(hitbox);
 
-    const glow = new THREE.PointLight(0xff2ec4, 0.8, 6);
+    // Brighter/longer-range than the capsule's own glow (below), tinted to
+    // this skin's accent color, since the model has no emissive visor to
+    // carry it and reads dark otherwise.
+    const glow = new THREE.PointLight(accent, 1.4, 10);
     glow.position.set(0, 0.6, 0);
     mesh.add(glow);
 

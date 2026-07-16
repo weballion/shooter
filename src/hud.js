@@ -3,7 +3,7 @@ import { DEFAULT_DIFFICULTY, getDifficulty } from './difficulty.js';
 
 const DEFAULT_ENEMY_COUNT = 1;
 const DEFAULT_CONTROL_SCHEME = 'arrows';
-const DEFAULT_APPEARANCE = 'faces';
+const DEFAULT_APPEARANCE = 'monsters';
 
 export class HUD {
   constructor() {

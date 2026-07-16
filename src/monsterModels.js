@@ -2,8 +2,16 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { pickRandom } from './shuffle.js';
 
 const MODEL_DIR = './assets/models/';
-const MODEL_COUNT = 4;
-const MODEL_FILES = Array.from({ length: MODEL_COUNT }, (_, i) => `monster${i + 1}.glb`);
+
+// One signature neon accent color per skin (used for its glow light and
+// blended into its emissive self-glow — see bot.js) so each monster type
+// reads as its own distinct "species" instead of all sharing one color.
+const MODEL_FILES = [
+  { file: 'monster1.glb', accentColor: 0x00e5ff }, // Robot Enemy — electric cyan
+  { file: 'monster2.glb', accentColor: 0xaa33ff }, // Alien — violet
+  { file: 'monster3.glb', accentColor: 0xff8c1a }, // Enemy Small (flyer) — amber
+  { file: 'monster4.glb', accentColor: 0x39ff14 }, // Slime Enemy — acid green
+];
 
 /**
  * Loads whichever monster models actually exist in assets/models/
@@ -22,11 +30,11 @@ export async function loadMonsterModels() {
   const loader = new GLTFLoader();
   const results = await Promise.all(
     MODEL_FILES.map(
-      (file) =>
+      ({ file, accentColor }) =>
         new Promise((resolve) => {
           loader.load(
             MODEL_DIR + file,
-            (gltf) => resolve({ scene: gltf.scene, animations: gltf.animations }),
+            (gltf) => resolve({ scene: gltf.scene, animations: gltf.animations, accentColor }),
             undefined,
             () => resolve(null) // missing/broken file — skip it
           );
